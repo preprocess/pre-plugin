@@ -1,0 +1,16 @@
+{
+    "name": "pre/plugin",
+    "require": {
+        "php": "^7.0",
+        "yay/yay": "dev-master"
+    },
+    "autoload": {
+        "files": [
+            "functions.php",
+            "expanders.php",
+            "autoload.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
