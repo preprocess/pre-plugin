@@ -30,16 +30,20 @@ spl_autoload_register(function($class) {
                     unlink($php);
                 }
 
+                $preContent = file_get_contents($pre);
+
                 foreach (getMacroPaths() as $macroPath) {
-                    file_put_contents(
-                        "{$pre}.interim",
-                        str_replace(
-                            "<?php",
-                            file_get_contents($macroPath),
-                            file_get_contents($pre)
-                        )
+                    $preContent = str_replace(
+                        "<?php",
+                        file_get_contents($macroPath),
+                        $preContent
                     );
                 }
+
+                file_put_contents(
+                    "{$pre}.interim",
+                    $preContent
+                );
 
                 exec(BASE_DIR . "/vendor/bin/yay {$pre}.interim >> {$php}");
 
