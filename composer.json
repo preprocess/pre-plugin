@@ -2,14 +2,23 @@
     "name": "pre/plugin",
     "require": {
         "php": "^7.0",
-        "yay/yay": "dev-master"
+        "friendsofphp/php-cs-fixer": "^2.0",
+        "yay/yay": "dev-master#7e3abbe5459715bb1695cb54f2b70772b9cc5e77"
     },
     "autoload": {
         "files": [
+            "autoload.php",
             "functions.php",
-            "expanders.php",
-            "autoload.php"
+            "bootstrap.php"
         ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pre\\Tests\\": "tests"
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

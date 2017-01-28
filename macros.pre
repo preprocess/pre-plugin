@@ -1,0 +1,7 @@
+<?php
+
+macro {
+    →(···expression)
+} >> {
+    ··stringify(···expression)
+}

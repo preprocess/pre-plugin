@@ -20,7 +20,6 @@ function initMacroPaths() {
  */
 function addMacroPath($path) {
     initMacroPaths();
-
     array_push($GLOBALS[GLOBAL_KEY], $path);
 }
 
@@ -32,18 +31,20 @@ function addMacroPath($path) {
 function removeMacroPath($path) {
     initMacroPaths();
 
-    $GLOBALS[GLOBAL_KEY] = array_filter($GLOBALS[GLOBAL_KEY], function($next) use ($path) {
-        return $next !== $path;
-    });
+    $GLOBALS[GLOBAL_KEY] = array_filter(
+        $GLOBALS[GLOBAL_KEY],
+        function($next) use ($path) {
+            return $next !== $path;
+        }
+    );
 }
 
 /**
- * Gets all amcro file paths.
+ * Gets all macro file paths.
  *
  * @return array
  */
 function getMacroPaths() {
     initMacroPaths();
-
     return $GLOBALS[GLOBAL_KEY];
 }

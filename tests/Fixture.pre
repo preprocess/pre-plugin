@@ -1,0 +1,10 @@
+<?php
+
+namespace Pre\Tests;
+
+class Fixture
+{
+    public function foo($name) {
+        return "hello {$name}";
+    }
+}
