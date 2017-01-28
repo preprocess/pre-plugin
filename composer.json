@@ -1,5 +1,7 @@
 {
     "name": "pre/plugin",
+    "description": "Pre PHP processing foundation",
+    "license": "MIT",
     "require": {
         "php": "^7.0",
         "friendsofphp/php-cs-fixer": "^2.0",
