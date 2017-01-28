@@ -9,9 +9,9 @@
     },
     "autoload": {
         "files": [
-            "autoload.php",
-            "functions.php",
-            "bootstrap.php"
+            "src/autoload.php",
+            "src/functions.php",
+            "src/bootstrap.php"
         ]
     },
     "require-dev": {

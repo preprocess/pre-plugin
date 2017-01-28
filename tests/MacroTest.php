@@ -16,7 +16,7 @@ class MacroTest extends TestCase
 
         $this->assertEquals(1, count(getMacroPaths()));
 
-        $expected = realpath(__DIR__ . "/../macros.pre");
+        $expected = realpath(__DIR__ . "/../src/macros.pre");
         $actual = realpath(getMacroPaths()[0]);
 
         $this->assertEquals($expected, $actual);
@@ -35,7 +35,7 @@ class MacroTest extends TestCase
         // can we remove it again?
 
         removeMacroPath("foo/bar/baz");
-        
+
         $this->assertEquals(1, count(getMacroPaths()));
     }
 }
