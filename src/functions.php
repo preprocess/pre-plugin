@@ -94,7 +94,5 @@ function process($base, $from, $to)
         );
 
         exec("{$base}/vendor/bin/php-cs-fixer --quiet --using-cache=no fix {$to}");
-
-        require_once $to;
     }
 }

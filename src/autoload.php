@@ -29,6 +29,8 @@ spl_autoload_register(function ($class) {
             $pre = $path . "/" . str_replace("\\", "/", $relativeClass) . ".pre";
 
             process($base, $pre, $php);
+
+            require_once $php;
         }
     }
 }, false, true);
