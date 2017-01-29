@@ -5,7 +5,7 @@
     "require": {
         "php": "^7.0",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-master#7e3abbe5459715bb1695cb54f2b70772b9cc5e77"
+        "yay/yay": "dev-master#2a8be861eba653d50a20a9bb5a4d8f2391950a0c"
     },
     "autoload": {
         "files": [
