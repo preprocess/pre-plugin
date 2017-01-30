@@ -1,12 +1,8 @@
 <?php
 
-namespace Pre\Tests;
+namespace Pre;
 
 use PHPUnit\Framework\TestCase;
-
-use function Pre\getMacroPaths;
-use function Pre\addMacroPath;
-use function Pre\removeMacroPath;
 
 class MacroTest extends TestCase
 {

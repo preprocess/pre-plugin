@@ -1,6 +1,6 @@
 <?php
 
-namespace Pre\Tests;
+namespace Pre\Fixture;
 
 class Fixture
 {

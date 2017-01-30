@@ -28,6 +28,10 @@ spl_autoload_register(function ($class) {
             $php = $path . "/" . str_replace("\\", "/", $relativeClass) . ".php";
             $pre = $path . "/" . str_replace("\\", "/", $relativeClass) . ".pre";
 
+            if (!file_exists($pre)) {
+                continue;
+            }
+
             process($base, $pre, $php);
 
             require_once $php;

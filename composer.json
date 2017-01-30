@@ -1,6 +1,5 @@
 {
     "name": "pre/plugin",
-    "description": "Pre PHP processing foundation",
     "license": "MIT",
     "require": {
         "php": "^7.0",
@@ -19,7 +18,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Pre\\Tests\\": "tests"
+            "Pre\\": "tests"
         }
     },
     "minimum-stability": "dev",

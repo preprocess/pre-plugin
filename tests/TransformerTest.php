@@ -1,18 +1,16 @@
 <?php
 
-namespace Pre\Tests;
+namespace Pre;
 
 use PHPUnit\Framework\TestCase;
-
-use function Pre\addMacroPath;
 
 class TransformerTest extends TestCase
 {
     public function testTransformerWithCustomMacro()
     {
-        addMacroPath(__DIR__ . "/macros.pre");
+        addMacroPath(__DIR__ . "/Fixture/macros.pre");
 
-        $fixture = new Fixture();
+        $fixture = new Fixture\Fixture();
 
         $expected = "hello chris";
         $actual = $fixture->bar("chris");
