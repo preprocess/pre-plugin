@@ -10,6 +10,7 @@
         "files": [
             "src/autoload.php",
             "src/functions.php",
+            "src/expanders.php",
             "src/bootstrap.php"
         ]
     },
