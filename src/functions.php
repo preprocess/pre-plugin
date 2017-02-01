@@ -2,6 +2,10 @@
 
 namespace Pre;
 
+use PhpCsFixer\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+
 use function yay_parse;
 
 define("GLOBAL_KEY", "PRE_MACRO_PATHS");
@@ -58,41 +62,86 @@ function getMacroPaths()
 /**
  * Compiles a Pre file to a PHP file.
  *
- * @param string $base
  * @param string $from
  * @param string $to
+ * @param bool $format
+ * @param bool $comment
  */
-function process($base, $from, $to)
+function process($from, $to, $format = true, $comment = true)
 {
     if (file_exists($from)) {
-        if (file_exists($to)) {
-            unlink($to);
+        $code = file_get_contents($from);
+        $code = processString($code);
+
+        if ($format) {
+            $path = tempnam(sys_get_temp_dir(), "pre");
+            file_put_contents($path, $code);
+
+            format($path);
+            $code = file_get_contents($path);
+
+            unlink($path);
         }
 
-        $interim = file_get_contents($from);
+        if ($comment) {
+            $comment = trim("
+# This file is generated, changes you make will be lost.
+# Make your changes in {$from} instead.
+            ");
 
-        foreach (getMacroPaths() as $macroPath) {
-            $interim = str_replace(
+            $code = str_replace(
                 "<?php",
-                file_get_contents($macroPath),
-                $interim
+                "<?php\n\n{$comment}",
+                $code
             );
         }
 
-        $compiled = yay_parse($interim);
-
-        $comment = "# This file is generated, changes you make will be lost.
-# Make your changes in {$from} instead.";
-
-        file_put_contents(
-            $to,
-            str_replace(
-                "<?php",
-                "<?php\n\n{$comment}",
-                $compiled
-            )
-        );
-
-        exec("{$base}/vendor/bin/php-cs-fixer --quiet --using-cache=no fix {$to}");
+        file_put_contents($to, $code);
     }
+}
+
+/**
+ * Compiles Pre syntax to PHP syntax.
+ *
+ * @param string $code
+ *
+ * @return string
+ */
+function processString($code)
+{
+    foreach (getMacroPaths() as $macro) {
+        $code = str_replace(
+            "<?php",
+            file_get_contents($macro),
+            $code
+        );
+    }
+
+    return yay_parse($code);
+}
+
+/**
+ * Formats PHP syntax to be PSR-2 compliant.
+ *
+ * @param string $path
+ */
+function format($path)
+{
+    $application = new Application();
+    $application->setAutoExit(false);
+
+    if (!is_array($path)) {
+        $path = [$path];
+    }
+
+    $input = new ArrayInput([
+        "command" => "fix",
+        "path" => $path,
+        "--using-cache" => "no",
+        "--quiet",
+    ]);
+
+   $output = new BufferedOutput();
+
+   $application->run($input, $output);
 }
