@@ -22,11 +22,11 @@ spl_autoload_register(function ($class) {
             continue;
         }
 
-        $relativeClass = substr($class, $prefixLength);
+        $relative = substr($class, $prefixLength);
 
         foreach ($paths as $path) {
-            $php = $path . "/" . str_replace("\\", "/", $relativeClass) . ".php";
-            $pre = $path . "/" . str_replace("\\", "/", $relativeClass) . ".pre";
+            $php = $path . "/" . str_replace("\\", "/", $relative) . ".php";
+            $pre = $path . "/" . str_replace("\\", "/", $relative) . ".pre";
 
             if (!file_exists($pre)) {
                 continue;

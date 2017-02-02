@@ -4,7 +4,7 @@
     "require": {
         "php": "^7.0",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-master#2a8be861eba653d50a20a9bb5a4d8f2391950a0c"
+        "yay/yay": "dev-master"
     },
     "autoload": {
         "files": [
@@ -12,10 +12,13 @@
             "src/functions.php",
             "src/expanders.php",
             "src/bootstrap.php"
-        ]
+        ],
+        "psr-4": {
+            "Pre\\": "src"
+        }
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5.0"
     },
     "autoload-dev": {
         "psr-4": {

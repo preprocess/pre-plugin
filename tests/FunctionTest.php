@@ -4,9 +4,9 @@ namespace Pre;
 
 use PHPUnit\Framework\TestCase;
 
-class MacroTest extends TestCase
+class FunctionTest extends TestCase
 {
-    public function testMacroPaths()
+    public function testMacroFunctions()
     {
         // this repo registers its own macro file
 
@@ -33,5 +33,17 @@ class MacroTest extends TestCase
         removeMacroPath("foo/bar/baz");
 
         $this->assertEquals(1, count(getMacroPaths()));
+    }
+
+    public function testCustomMacro()
+    {
+        addMacroPath(__DIR__ . "/Fixture/macros.pre");
+
+        $fixture = new Fixture\Fixture();
+
+        $expected = "hello chris";
+        $actual = $fixture->bar("chris");
+
+        $this->assertEquals($expected, $actual);
     }
 }

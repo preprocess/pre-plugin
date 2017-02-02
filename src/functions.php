@@ -117,7 +117,9 @@ function processString($code)
         );
     }
 
-    return yay_parse($code);
+    $parsed = yay_parse($code);
+
+    return preg_replace('/\n\s+\n/', "\n\n", $parsed);
 }
 
 /**
@@ -141,7 +143,7 @@ function format($path)
         "--quiet",
     ]);
 
-   $output = new BufferedOutput();
+    $output = new BufferedOutput();
 
-   $application->run($input, $output);
+    $application->run($input, $output);
 }
