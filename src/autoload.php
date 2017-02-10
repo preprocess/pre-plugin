@@ -9,6 +9,10 @@ spl_autoload_register(function ($class) {
 
     $base = getenv("PRE_BASE_DIR");
 
+    if (file_exists("{$base}/pre.lock")) {
+        return;
+    }
+
     if (!file_exists("{$base}/vendor/composer/autoload_psr4.php")) {
         return;
     }

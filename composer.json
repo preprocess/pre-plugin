@@ -1,10 +1,12 @@
 {
     "name": "pre/plugin",
+    "type": "composer-plugin",
     "license": "MIT",
     "require": {
         "php": "^7.0",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-master"
+        "yay/yay": "dev-master",
+        "composer-plugin-api": "^1.1"
     },
     "autoload": {
         "files": [
@@ -18,12 +20,18 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0"
+        "phpunit/phpunit": "^5.0",
+        "composer/composer": "^1.3"
     },
     "autoload-dev": {
         "psr-4": {
             "Pre\\": "tests"
         }
+    },
+    "extra": {
+        "class": [
+            "Pre\\Plugin"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true
