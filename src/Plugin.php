@@ -35,6 +35,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io = $io;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -44,6 +49,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
+    /**
+     * Preprocesses all files if the autoloader should be optimized.
+     *
+     * @param Event $event
+     */
     public function onPreAutoloadDump(Event $event)
     {
         $basePath = $this->getBasePath($event);
@@ -73,8 +83,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
                 process($pre, $php, $format = true, $comment = false);
             }
-
-            exit;
         } else {
             if (file_exists($lockPath)) {
                 unlink($basePath . "/pre.lock");
