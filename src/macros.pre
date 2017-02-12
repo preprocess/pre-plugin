@@ -5,3 +5,31 @@ macro {
 } >> {
     ··stringify(···expression)
 }
+
+macro {
+    ..
+} >> {
+    __DIR__ .
+}
+
+macro {
+    ·chain(
+        ·optional(
+            ·chain(
+                T_VARIABLE·var,
+                ·token("=")
+            )
+        )·assignment,
+        process,
+        ·repeat(
+            ·either(
+                ·token("."),
+                ·token(T_CONST),
+                ·token(T_CONSTANT_ENCAPSED_STRING)
+            )
+        )·path,
+        ·token(";")
+    )
+} >> {
+    ··trim(·assignment Pre\processAndRequire(·path));
+}

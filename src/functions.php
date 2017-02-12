@@ -147,3 +147,28 @@ function format($path)
 
     $application->run($input, $output);
 }
+
+/**
+ * Processes and requires a Pre file.
+ *
+ * @param string $pre
+ *
+ * @return mixed
+ */
+function processAndRequire($pre)
+{
+    static $required;
+
+    if (is_null($required)) {
+        $required = [];
+    }
+
+    if (!isset($required[$pre])) {
+        $php = preg_replace("/pre$/", "php", $pre);
+        process($pre, $php);
+
+        $required[$pre] = require $php;
+    }
+
+    return $required[$pre];
+}
