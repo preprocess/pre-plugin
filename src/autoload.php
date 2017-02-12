@@ -4,7 +4,7 @@ namespace Pre;
 
 spl_autoload_register(function ($class) {
     if (empty(getenv("PRE_BASE_DIR"))) {
-        putenv("PRE_BASE_DIR=" . __DIR__ . "/../../..");
+        putenv("PRE_BASE_DIR=" . __DIR__ . "/../../../..");
     }
 
     $base = getenv("PRE_BASE_DIR");
