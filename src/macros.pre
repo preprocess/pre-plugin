@@ -31,5 +31,5 @@ macro {
         ·token(";")
     )
 } >> {
-    ··trim(·assignment Pre\processAndRequire(·path));
+    ·assignment Pre\processAndRequire(·path);
 }

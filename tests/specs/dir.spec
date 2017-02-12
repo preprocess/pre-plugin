@@ -16,4 +16,4 @@ Pre\processAndRequire("one.pre");
 
 $val= Pre\processAndRequire("two.pre");
 
-Pre\processAndRequire("one"."two"."three".CONST);
+ Pre\processAndRequire("one"."two"."three".CONST);
