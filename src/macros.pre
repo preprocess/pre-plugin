@@ -1,18 +1,18 @@
 <?php
 
-macro {
+macro ·recursion {
     →(···expression)
 } >> {
     ··stringify(···expression)
 }
 
-macro {
+macro ·recursion {
     ..
 } >> {
     __DIR__ .
 }
 
-macro {
+macro ·recursion {
     ·chain(
         ·optional(
             ·chain(
@@ -27,9 +27,8 @@ macro {
                 ·token(T_CONST),
                 ·token(T_CONSTANT_ENCAPSED_STRING)
             )
-        )·path,
-        ·token(";")
+        )·path
     )
 } >> {
-    ·assignment Pre\processAndRequire(·path);
+    ·assignment Pre\processAndRequire(·path)
 }
