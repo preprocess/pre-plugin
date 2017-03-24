@@ -3,9 +3,8 @@
     "type": "composer-plugin",
     "license": "MIT",
     "require": {
-        "php": "^7.0",
+        "yay/yay": "^0.1.0",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-master",
         "composer-plugin-api": "^1.1"
     },
     "autoload": {
@@ -32,7 +31,5 @@
         "class": [
             "Pre\\Plugin"
         ]
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
