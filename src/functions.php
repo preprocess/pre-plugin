@@ -5,8 +5,7 @@ namespace Pre;
 use PhpCsFixer\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-
-use function yay_parse;
+use Yay\Engine;
 
 define("GLOBAL_KEY", "PRE_MACRO_PATHS");
 
@@ -109,6 +108,12 @@ function process($from, $to, $format = true, $comment = true)
  */
 function processString($code)
 {
+    static $engine;
+
+    if (is_null($engine)) {
+        $engine = new Engine;
+    }
+
     foreach (getMacroPaths() as $macro) {
         $code = str_replace(
             "<?php",
@@ -117,7 +122,9 @@ function processString($code)
         );
     }
 
-    $parsed = yay_parse($code);
+    gc_disable();
+    $parsed = $engine->expand($code);
+    gc_enable();
 
     return preg_replace('/\n\s+\n/', "\n\n", $parsed);
 }
