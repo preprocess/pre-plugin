@@ -3,7 +3,7 @@
     "type": "composer-plugin",
     "license": "MIT",
     "require": {
-        "yay/yay": "^0.1.0",
+        "yay/yay": "^0.1.1",
         "friendsofphp/php-cs-fixer": "^2.0",
         "composer-plugin-api": "^1.1"
     },
