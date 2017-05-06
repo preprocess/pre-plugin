@@ -30,5 +30,5 @@ macro ·recursion {
         )·path
     )
 } >> {
-    ·assignment Pre\processAndRequire(·path)
+    ·assignment \Pre\processAndRequire(·path)
 }
