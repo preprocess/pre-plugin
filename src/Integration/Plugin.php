@@ -1,14 +1,14 @@
 <?php
 
-namespace Pre;
+namespace Pre\Plugin\Integration;
 
 use Composer\Composer;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\IO\ConsoleIO;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PluginEvents;
-use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Script\Event;
-use Composer\IO\ConsoleIO;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -33,6 +33,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
+
+        $composer
+            ->getInstallationManager()
+            ->addInstaller(new Installer($io, $composer));
     }
 
     /**
@@ -63,6 +67,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         if ($shouldOptimize) {
             touch($lockPath);
+
+            if (!file_exists("{$basePath}/vendor/autoload.php")) {
+                return;
+            }
 
             require_once "{$basePath}/vendor/autoload.php";
 
@@ -100,8 +108,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private function getBasePath(Event $event)
     {
         $config = $event->getComposer()->getConfig();
-
-        return realpath($config->get("vendor-dir") . "/..");
+        return realpath($config->get("vendor-dir") . "/../");
     }
 
     /**

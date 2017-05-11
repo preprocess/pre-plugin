@@ -1,19 +1,11 @@
 --DESCRIPTION--
 
-Test process macro
+Test dir macro
 
 --GIVEN--
 
-process "one.pre";
-
-$val = process "two.pre";
-
-process "one" . "two" . "three" . CONST;
+require_once .."/file.php"
 
 --EXPECT--
 
-Pre\processAndRequire("one.pre");
-
-$val= Pre\processAndRequire("two.pre");
-
- Pre\processAndRequire("one"."two"."three".CONST);
+require_once __DIR__ ."/file.php"

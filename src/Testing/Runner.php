@@ -1,6 +1,6 @@
 <?php
 
-namespace Pre\Testing;
+namespace Pre\Plugin\Testing;
 
 use Exception;
 use PHPUnit\Framework\TestCase;

@@ -1,11 +1,18 @@
 <?php
 
-namespace Pre;
+namespace Pre\Plugin;
 
 use PhpCsFixer\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Yay\Engine;
+
+require_once __DIR__ . "/environment.php";
+
+define("COMMENT", trim("
+# This file is generated, changes you make will be lost.
+# Make your changes in %s instead.
+"));
 
 define("GLOBAL_KEY", "PRE_MACRO_PATHS");
 
@@ -66,11 +73,11 @@ function getMacroPaths()
  * @param bool $format
  * @param bool $comment
  */
-function process($from, $to, $format = true, $comment = true)
+function compile($from, $to, $format = true, $comment = true)
 {
     if (file_exists($from)) {
         $code = file_get_contents($from);
-        $code = processString($code);
+        $code = expand($code);
 
         if ($format) {
             $path = tempnam(sys_get_temp_dir(), "pre");
@@ -83,10 +90,7 @@ function process($from, $to, $format = true, $comment = true)
         }
 
         if ($comment) {
-            $comment = trim("
-# This file is generated, changes you make will be lost.
-# Make your changes in {$from} instead.
-            ");
+            $comment = sprintf(COMMENT, $from);
 
             $code = str_replace(
                 "<?php",
@@ -106,7 +110,7 @@ function process($from, $to, $format = true, $comment = true)
  *
  * @return string
  */
-function processString($code)
+function expand($code, $includeStaticPaths = true)
 {
     static $engine;
 
@@ -114,12 +118,31 @@ function processString($code)
         $engine = new Engine;
     }
 
-    foreach (getMacroPaths() as $macro) {
-        $code = str_replace(
-            "<?php",
-            file_get_contents($macro),
-            $code
-        );
+    static $staticPaths;
+
+    if ($includeStaticPaths) {
+        if (!is_array($staticPaths)) {
+            $staticPaths = [];
+        }
+
+        $base = getenv("PRE_BASE_DIR");
+
+        if (file_exists("{$base}/pre.paths")) {
+            $data = json_decode(file_get_contents("{$base}/pre.paths"), true);
+            $staticPaths = array_keys($data);
+        }
+    }
+
+    $paths = array_merge(getMacroPaths(), $staticPaths);
+
+    foreach ($paths as $path) {
+        if (file_exists($path)) {
+            $code = str_replace(
+                "<?php",
+                file_get_contents($path),
+                $code
+            );
+        }
     }
 
     gc_disable();
@@ -162,7 +185,7 @@ function format($path)
  *
  * @return mixed
  */
-function processAndRequire($pre)
+function process($pre)
 {
     static $required;
 
@@ -172,9 +195,9 @@ function processAndRequire($pre)
 
     if (!isset($required[$pre])) {
         $php = preg_replace("/pre$/", "php", $pre);
-        process($pre, $php);
+        compile($pre, $php);
 
-        $required[$pre] = require $php;
+        $required[$pre] = require_once $php;
     }
 
     return $required[$pre];

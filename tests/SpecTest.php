@@ -1,8 +1,8 @@
 <?php
 
-namespace Pre;
+namespace Pre\Plugin;
 
-use Pre\Testing\Runner;
+use Pre\Plugin\Testing\Runner;
 
 class MacroTest extends Runner
 {
