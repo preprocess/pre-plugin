@@ -2,24 +2,34 @@
 
 namespace Yay\DSL\Expanders;
 
+use Yay\Engine;
 use Yay\Token;
 use Yay\TokenStream;
 
-function trim($string): TokenStream
+function trim(TokenStream $stream, Engine $engine): TokenStream
 {
-    $string = \trim($string);
+    $stream = \trim($stream);
 
-    return TokenStream::fromSequence(
-        new Token(T_CONSTANT_ENCAPSED_STRING, $string)
+    return TokenStream::fromSource(
+        $engine->expand($stream, "", Engine::GC_ENGINE_DISABLED)
     );
 }
 
-function studly($string): TokenStream
+function collapse(TokenStream $stream, Engine $engine): TokenStream
 {
-    $string = \str_replace(["-", "_"], " ", $string);
-    $string = \str_replace(" ", "", ucwords($string));
+    $stream = \preg_replace("/\n+/", "", $stream);
 
-    return TokenStream::fromSequence(
-        new Token(T_CONSTANT_ENCAPSED_STRING, $string)
+    return TokenStream::fromSource(
+        $engine->expand($stream, "", Engine::GC_ENGINE_DISABLED)
+    );
+}
+
+function studly(TokenStream $stream, Engine $engine): TokenStream
+{
+    $stream = \str_replace(["-", "_"], " ", $stream);
+    $stream = \str_replace(" ", "", \ucwords($stream));
+
+    return TokenStream::fromSource(
+        $engine->expand($stream, "", Engine::GC_ENGINE_DISABLED)
     );
 }

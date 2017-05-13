@@ -1,0 +1,35 @@
+<?php
+
+macro ·recursion {
+    →(···expression)
+} >> {
+    ··stringify(···expression)
+}
+
+macro ·recursion {
+    ..
+} >> {
+    __DIR__ .
+}
+
+macro ·recursion {
+    process ..
+} >> {
+    process __DIR__ .
+}
+
+macro ·recursion {
+    ·chain(
+        process,
+        ·ls(
+            ·either(
+                ·token(T_DIR),
+                ·token(T_STRING),
+                ·token(T_CONSTANT_ENCAPSED_STRING)
+            )·item,
+            ·token(".")
+        )·items
+    )
+} >> {··trim(
+    \Pre\Plugin\process(··trim(·items ···( . ) { ·item }))
+)}

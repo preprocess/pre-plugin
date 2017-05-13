@@ -1,18 +1,21 @@
 <?php
 
-namespace Pre;
+namespace Pre\Plugin;
 
 use PHPUnit\Framework\TestCase;
 
 class FunctionTest extends TestCase
 {
-    public function testMacroFunctions()
+    /**
+     * @test
+     */
+    public function can_register_its_own_macros()
     {
         // this repo registers its own macro file
 
         $this->assertEquals(1, count(getMacroPaths()));
 
-        $expected = realpath(__DIR__ . "/../src/macros.pre");
+        $expected = realpath(__DIR__ . "/../src/macros.yay");
         $actual = realpath(getMacroPaths()[0]);
 
         $this->assertEquals($expected, $actual);
@@ -35,11 +38,14 @@ class FunctionTest extends TestCase
         $this->assertEquals(1, count(getMacroPaths()));
     }
 
-    public function testCustomMacro()
+    /**
+     * @test
+     */
+    public function can_register_custom_macros()
     {
-        addMacroPath(__DIR__ . "/Fixture/macros.pre");
+        addMacroPath(__DIR__ . "/Fixture/macros.yay");
 
-        $fixture = new Fixture\Fixture();
+        $fixture = new Fixture\TestFixture();
 
         $expected = "hello chris";
         $actual = $fixture->bar("chris");

@@ -1,3 +1,3 @@
 <?php
 
-Pre\addMacroPath(__DIR__ . "/macros.pre");
+Pre\Plugin\addMacroPath(__DIR__ . "/macros.yay");

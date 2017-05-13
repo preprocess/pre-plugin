@@ -1,11 +1,11 @@
 <?php
 
-namespace Pre\Testing;
+namespace Pre\Plugin\Testing;
 
 use Exception;
 use PHPUnit\Framework\Assert;
 
-use function Pre\process;
+use function Pre\Plugin\compile;
 
 class Spec
 {
@@ -35,7 +35,7 @@ class Spec
     public function run()
     {
         if (!is_readable($this->pathToSpec)) {
-            $this->status = self::BROKEN;
+            $this->status = static::BROKEN;
             return;
         }
 
@@ -44,7 +44,7 @@ class Spec
         $sections = array_values(array_filter(array_map("trim", $parts)));
 
         if (count($sections) !== 3) {
-            $this->status = self::BROKEN;
+            $this->status = static::BROKEN;
             return;
         }
 
@@ -60,9 +60,9 @@ class Spec
             $actual = trim(substr($this->outputCode, 5));
             Assert::assertStringMatchesFormat($this->expectedCode, $actual);
 
-            $this->status = self::PASSED;
+            $this->status = static::PASSED;
         } catch (Exception $e) {
-            $this->status = self::FAILED;
+            $this->status = static::FAILED;
 
             throw $e;
         }
@@ -75,7 +75,7 @@ class Spec
 
         file_put_contents($pre, "<" . "?php\n\n" . $this->givenCode);
 
-        process($pre, $php, $format = true, $comment = false);
+        compile($pre, $php, $format = true, $comment = false);
 
         $this->outputCode = file_get_contents($php);
 
@@ -99,7 +99,7 @@ class Spec
     {
         $diff = "";
 
-        if ($this->status === self::FAILED) {
+        if ($this->status === static::FAILED) {
             $command = sprintf(static::DIFF_COMMAND, "expected", "actual", $this->pathToExpected, $this->pathToOutput);
 
             exec($command, $output);
