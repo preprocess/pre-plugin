@@ -17,11 +17,8 @@ process .."thing";
 --EXPECT--
 
 \Pre\Plugin\process("one.pre");
-
 $val = \Pre\Plugin\process("two.pre");
-
 \Pre\Plugin\process("one" . "two" . "three" . THING);
 \Pre\Plugin\process("one" . "two" . "three" . THING);
-
 \Pre\Plugin\process(__DIR__ . "thing");
 \Pre\Plugin\process(__DIR__ . "thing");

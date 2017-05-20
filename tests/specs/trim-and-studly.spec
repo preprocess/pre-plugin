@@ -56,21 +56,16 @@ class Sprocket
 class Sprocket
 {
     private $name;
-
     private function getName()
     {
         return "chris";
     }
-
     private $age;
-
     private function getAge()
     {
         return 30;
     }
-
     private $country_of_birth;
-
     private function getCountryOfBirth()
     {
         return "South Africa";

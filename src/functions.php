@@ -2,9 +2,9 @@
 
 namespace Pre\Plugin;
 
-use PhpCsFixer\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
+use PhpParser\Error;
+use PhpParser\ParserFactory;
+use PhpParser\PrettyPrinter;
 use Yay\Engine;
 
 require_once __DIR__ . "/environment.php";
@@ -159,23 +159,17 @@ function expand($code, $includeStaticPaths = true)
  */
 function format($path)
 {
-    $application = new Application();
-    $application->setAutoExit(false);
+    $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+    $prettyPrinter = new PrettyPrinter\Standard();
 
-    if (!is_array($path)) {
-        $path = [$path];
+    try {
+        $code = file_get_contents($path);
+        $statements = $parser->parse($code);
+        $code = $prettyPrinter->prettyPrintFile($statements);
+        file_put_contents($path, $code);
+    } catch (Error $e) {
+        // boo hoo!
     }
-
-    $input = new ArrayInput([
-        "command" => "fix",
-        "path" => $path,
-        "--using-cache" => "no",
-        "--quiet",
-    ]);
-
-    $output = new BufferedOutput();
-
-    $application->run($input, $output);
 }
 
 /**

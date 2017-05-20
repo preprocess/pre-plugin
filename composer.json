@@ -4,7 +4,6 @@
     "license": "MIT",
     "require": {
         "composer-plugin-api": "^1.1",
-        "friendsofphp/php-cs-fixer": "^2.0",
         "yay/yay": "^0.2"
     },
     "autoload": {
