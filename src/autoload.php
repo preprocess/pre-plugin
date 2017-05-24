@@ -5,6 +5,10 @@ namespace Pre\Plugin;
 require_once __DIR__ . "/environment.php";
 
 spl_autoload_register(function ($class) {
+    if (!empty(getenv("PRE_DISABLE_AUTOLOAD"))) {
+        return;
+    }
+
     $base = getenv("PRE_BASE_DIR");
 
     if (file_exists("{$base}/pre.lock")) {
