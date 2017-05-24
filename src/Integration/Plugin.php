@@ -12,6 +12,7 @@ use Composer\Script\Event;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use function Pre\Plugin\compile;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -89,7 +90,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $pre = $file->getPathname();
                 $php = preg_replace("/pre$/", "php", $pre);
 
-                process($pre, $php, $format = true, $comment = false);
+                compile($pre, $php, $format = true, $comment = false);
             }
         } else {
             if (file_exists($lockPath)) {
