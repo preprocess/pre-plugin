@@ -5,6 +5,7 @@ namespace Pre\Plugin;
 use PhpCsFixer\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Tuupola\Base62;
 use Yay\Engine;
 
 require_once __DIR__ . "/environment.php";
@@ -118,22 +119,31 @@ function expand($code, $includeStaticPaths = true)
         $engine = new Engine;
     }
 
-    static $staticPaths;
+    static $static;
 
     if ($includeStaticPaths) {
-        if (!is_array($staticPaths)) {
-            $staticPaths = [];
+        if (!is_array($static)) {
+            $static = [];
         }
 
         $base = getenv("PRE_BASE_DIR");
 
         if (file_exists("{$base}/pre.paths")) {
             $data = json_decode(file_get_contents("{$base}/pre.paths"), true);
-            $staticPaths = array_keys($data);
+
+            static $base62;
+
+            if (!$base62) {
+              $base62 = new Base62();
+            }
+
+            $static = array_map(function($key) use ($base62) {
+                return $base62->decode($key);
+            }, array_keys($data));
         }
     }
 
-    $paths = array_merge(getMacroPaths(), $staticPaths);
+    $paths = array_merge(getMacroPaths(), $static);
 
     foreach ($paths as $path) {
         if (file_exists($path)) {
