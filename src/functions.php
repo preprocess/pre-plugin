@@ -83,7 +83,7 @@ function compile($from, $to, $format = true, $comment = true)
             $path = tempnam(sys_get_temp_dir(), "pre");
             file_put_contents($path, $code);
 
-            format($path);
+            formatFile($path);
             $code = file_get_contents($path);
 
             unlink($path);
@@ -155,9 +155,26 @@ function expand($code, $includeStaticPaths = true)
 /**
  * Formats PHP syntax to be PSR-2 compliant.
  *
+ * @param string $code
+ */
+function formatCode($code)
+{
+    $dir = sys_get_temp_dir();
+    $name = tempnam($dir);
+
+    file_put_contents($name, $code);
+    formatFile($name);
+    $formatted = file_get_contents($name);
+    unlink($name);
+    return $formatted;
+}
+
+/**
+ * Formats PHP syntax to be PSR-2 compliant.
+ *
  * @param string $path
  */
-function format($path)
+function formatFile($path)
 {
     $application = new Application();
     $application->setAutoExit(false);
