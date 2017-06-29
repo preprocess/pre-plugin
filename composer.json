@@ -5,7 +5,8 @@
     "require": {
         "composer-plugin-api": "^1.1",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "^0.2"
+        "yay/yay": "^0.2",
+        "tuupola/base62": "^0.8"
     },
     "autoload": {
         "files": [

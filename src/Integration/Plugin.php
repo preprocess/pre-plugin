@@ -67,7 +67,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $shouldOptimize = $this->shouldOptimize($event);
 
         if ($shouldOptimize) {
-            touch($lockPath);
+            file_put_contents($lockPath, time());
 
             if (!file_exists("{$basePath}/vendor/autoload.php")) {
                 return;

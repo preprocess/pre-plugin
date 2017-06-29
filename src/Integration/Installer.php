@@ -4,6 +4,7 @@ namespace Pre\Plugin\Integration;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
+use Tuupola\Base62;
 
 class Installer extends LibraryInstaller
 {
@@ -53,7 +54,13 @@ class Installer extends LibraryInstaller
             $paths = json_decode(file_get_contents($file), true);
         }
 
-        $paths[$path] = true;
+        static $base62;
+
+        if (!$base62) {
+          $base62 = new Base62();
+        }
+
+        $paths[$base62->encode($path)] = true;
 
         file_put_contents($file, json_encode($paths, JSON_PRETTY_PRINT));
     }

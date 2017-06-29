@@ -1,3 +1,3 @@
-# Pre Plugin
+# Plugin
 
-Documentation can be found at [preprocess.io](https://preprocess.io/docs#plugin).
+Documentation can be found at [preprocess.io](https://preprocess.io#plugin).
