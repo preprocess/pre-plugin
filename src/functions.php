@@ -170,7 +170,7 @@ function expand($code, $includeStaticPaths = true)
 function formatCode($code)
 {
     $dir = sys_get_temp_dir();
-    $name = tempnam($dir);
+    $name = tempnam($dir, "pre");
 
     file_put_contents($name, $code);
     formatFile($name);
