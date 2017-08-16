@@ -169,6 +169,26 @@ function expand($code, $includeStaticPaths = true, $includeStaticCompilers = tru
         $engine = new Engine;
     }
 
+    static $staticCompilers;
+
+    if ($includeStaticCompilers) {
+        if (!is_array($staticCompilers)) {
+            $staticCompilers = [];
+        }
+
+        $base = getenv("PRE_BASE_DIR");
+
+        if (file_exists("{$base}/pre.compilers")) {
+            $staticCompilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
+        }
+    }
+
+    $compilers = array_merge(getCompilers(), $staticCompilers);
+
+    foreach ($compilers as $compiler) {
+        $code = $compiler($code);
+    }
+
     static $staticPaths;
 
     if ($includeStaticPaths) {
@@ -203,26 +223,6 @@ function expand($code, $includeStaticPaths = true, $includeStaticCompilers = tru
                 $code
             );
         }
-    }
-
-    static $staticCompilers;
-
-    if ($includeStaticCompilers) {
-        if (!is_array($staticCompilers)) {
-            $staticCompilers = [];
-        }
-
-        $base = getenv("PRE_BASE_DIR");
-
-        if (file_exists("{$base}/pre.compilers")) {
-            $staticCompilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
-        }
-    }
-
-    $compilers = array_merge(getCompilers(), $staticCompilers);
-
-    foreach ($compilers as $compiler) {
-        $code = $compiler($code);
     }
 
     gc_disable();
