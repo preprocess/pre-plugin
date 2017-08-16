@@ -13,7 +13,7 @@ class Installer extends LibraryInstaller
      */
     public function supports($type)
     {
-        return $type === "pre-macro";
+        return $type === "pre-macro" || $type === "pre-compiler";
     }
 
     /**
@@ -29,7 +29,13 @@ class Installer extends LibraryInstaller
 
         if (isset($extra["macros"]) && is_array($extra["macros"])) {
             foreach ($extra["macros"] as $macro) {
-                $this->add("{$path}/{$macro}");
+                $this->addMacroPath("{$path}/{$macro}");
+            }
+        }
+
+        if (isset($extra["compilers"]) && is_array($extra["compilers"])) {
+            foreach ($extra["compilers"] as $compiler) {
+                $this->addCompiler($compiler);
             }
         }
 
@@ -39,7 +45,7 @@ class Installer extends LibraryInstaller
     /**
      * @param string $path
      */
-    private function add($path)
+    private function addMacroPath($path)
     {
         if (!file_exists($path)) {
             return;
@@ -72,5 +78,28 @@ class Installer extends LibraryInstaller
     {
         require_once __DIR__ . "/../environment.php";
         return getenv("PRE_BASE_DIR");
+    }
+
+    /**
+     * @param string $compiler
+     */
+    private function addCompiler($compiler)
+    {
+        $base = $this->base();
+        $file = "{$base}/pre.compilers";
+
+        $compilers = [];
+
+        if (file_exists($file)) {
+            $compilers = json_decode(file_get_contents($file), true);
+        }
+
+        $compilers = array_filter($compilers, function($next) use ($compiler) {
+            return $next !== $compiler;
+        });
+
+        $compilers[] = $compiler;
+
+        file_put_contents($file, json_encode($compilers, JSON_PRETTY_PRINT));
     }
 }

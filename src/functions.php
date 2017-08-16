@@ -15,15 +15,26 @@ define("COMMENT", trim("
 # Make your changes in %s instead.
 "));
 
-define("GLOBAL_KEY", "PRE_MACRO_PATHS");
+define("GLOBAL_MACRO_PATH_KEY", "PRE_MACRO_PATHS");
+define("GLOBAL_COMPILER_KEY", "PRE_COMPILERS");
 
 /**
  * Creates the list of macros, if it is undefined.
  */
 function initMacroPaths()
 {
-    if (!isset($GLOBALS[GLOBAL_KEY])) {
-        $GLOBALS[GLOBAL_KEY] = [];
+    if (!isset($GLOBALS[GLOBAL_MACRO_PATH_KEY])) {
+        $GLOBALS[GLOBAL_MACRO_PATH_KEY] = [];
+    }
+}
+
+/**
+ * Creates the list of compilers, if it is undefined.
+ */
+function initCompilers()
+{
+    if (!isset($GLOBALS[GLOBAL_COMPILER_KEY])) {
+        $GLOBALS[GLOBAL_COMPILER_KEY] = [];
     }
 }
 
@@ -35,7 +46,18 @@ function initMacroPaths()
 function addMacroPath($path)
 {
     initMacroPaths();
-    array_push($GLOBALS[GLOBAL_KEY], $path);
+    array_push($GLOBALS[GLOBAL_MACRO_PATH_KEY], $path);
+}
+
+/**
+ * Adds a compiler to the list of compilers.
+ *
+ * @param string $compiler
+ */
+function addCompiler($compiler)
+{
+    initCompilers();
+    array_push($GLOBALS[GLOBAL_COMPILER_KEY], $compiler);
 }
 
 /**
@@ -47,10 +69,27 @@ function removeMacroPath($path)
 {
     initMacroPaths();
 
-    $GLOBALS[GLOBAL_KEY] = array_filter(
-        $GLOBALS[GLOBAL_KEY],
+    $GLOBALS[GLOBAL_MACRO_PATH_KEY] = array_filter(
+        $GLOBALS[GLOBAL_MACRO_PATH_KEY],
         function ($next) use ($path) {
             return $next !== $path;
+        }
+    );
+}
+
+/**
+ * Removes a path to the list of macro files.
+ *
+ * @param string $compiler
+ */
+function removeCompiler($compiler)
+{
+    initCompilers();
+
+    $GLOBALS[GLOBAL_COMPILER_KEY] = array_filter(
+        $GLOBALS[GLOBAL_COMPILER_KEY],
+        function ($next) use ($compiler) {
+            return $next !== $compiler;
         }
     );
 }
@@ -63,7 +102,18 @@ function removeMacroPath($path)
 function getMacroPaths()
 {
     initMacroPaths();
-    return $GLOBALS[GLOBAL_KEY];
+    return $GLOBALS[GLOBAL_MACRO_PATH_KEY];
+}
+
+/**
+ * Gets all compiler functions.
+ *
+ * @return array
+ */
+function getCompilers()
+{
+    initCompilers();
+    return $GLOBALS[GLOBAL_COMPILER_KEY];
 }
 
 /**
@@ -111,7 +161,7 @@ function compile($from, $to, $format = true, $comment = true)
  *
  * @return string
  */
-function expand($code, $includeStaticPaths = true)
+function expand($code, $includeStaticPaths = true, $includeStaticCompilers = true)
 {
     static $engine;
 
@@ -119,11 +169,11 @@ function expand($code, $includeStaticPaths = true)
         $engine = new Engine;
     }
 
-    static $static;
+    static $staticPaths;
 
     if ($includeStaticPaths) {
-        if (!is_array($static)) {
-            $static = [];
+        if (!is_array($staticPaths)) {
+            $staticPaths = [];
         }
 
         $base = getenv("PRE_BASE_DIR");
@@ -137,13 +187,13 @@ function expand($code, $includeStaticPaths = true)
               $base62 = new Base62();
             }
 
-            $static = array_map(function($key) use ($base62) {
+            $staticPaths = array_map(function($key) use ($base62) {
                 return $base62->decode($key);
             }, array_keys($data));
         }
     }
 
-    $paths = array_merge(getMacroPaths(), $static);
+    $paths = array_merge(getMacroPaths(), $staticPaths);
 
     foreach ($paths as $path) {
         if (file_exists($path)) {
@@ -153,6 +203,26 @@ function expand($code, $includeStaticPaths = true)
                 $code
             );
         }
+    }
+
+    static $staticCompilers;
+
+    if ($includeStaticCompilers) {
+        if (!is_array($staticCompilers)) {
+            $staticCompilers = [];
+        }
+
+        $base = getenv("PRE_BASE_DIR");
+
+        if (file_exists("{$base}/pre.compilers")) {
+            $staticCompilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
+        }
+    }
+
+    $compilers = array_merge(getCompilers(), $staticCompilers);
+
+    foreach ($compilers as $compiler) {
+        $code = $compiler($code);
     }
 
     gc_disable();
