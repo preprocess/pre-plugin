@@ -4,6 +4,10 @@ namespace Pre\Plugin;
 
 use PHPUnit\Framework\TestCase;
 
+function compiler($code) {
+    return "{$code} COMPILED";
+}
+
 class FunctionTest extends TestCase
 {
     /**
@@ -51,5 +55,22 @@ class FunctionTest extends TestCase
         $actual = $fixture->bar("chris");
 
         $this->assertEquals($expected, $actual);
+
+        removeMacroPath(__DIR__ . "/Fixture/macros.yay");
+    }
+
+    /**
+     * @test
+     */
+    public function can_register_custom_compilers()
+    {
+        addCompiler("Pre\\Plugin\\compiler");
+
+        $expected = "hello world COMPILED";
+        $actual = expand("hello world");
+
+        $this->assertEquals($expected, $actual);
+
+        removeCompiler("Pre\\Plugin\\compiler");
     }
 }
