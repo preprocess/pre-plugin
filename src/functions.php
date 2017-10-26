@@ -158,7 +158,7 @@ function compile($from, $to, $format = true, $comment = true)
 function expand($code, $includeStaticPaths = true, $includeStaticCompilers = true)
 {
     $base = getenv("PRE_BASE_DIR");
-    $vendor = realpath("{$base}/vendor/autoload.php");
+    $vendor = getenv("PRE_ISOLATE_DEPENDENCIES_AUTOLOADER");
 
     static $staticCompilers = [];
 
@@ -279,7 +279,7 @@ function formatCode($code)
 function formatFile($path)
 {
     $base = getenv("PRE_BASE_DIR");
-    $vendor = realpath("{$base}/vendor/autoload.php");
+    $vendor = getenv("PRE_ISOLATE_DEPENDENCIES_AUTOLOADER");
 
     if ((int) getenv("PRE_ISOLATE_DEPENDENCIES") === 1) {
         $defer = '
