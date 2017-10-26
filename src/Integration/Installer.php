@@ -63,7 +63,7 @@ class Installer extends LibraryInstaller
         static $base62;
 
         if (!$base62) {
-          $base62 = new Base62();
+            $base62 = new Base62();
         }
 
         $paths[$base62->encode($path)] = true;
@@ -94,7 +94,7 @@ class Installer extends LibraryInstaller
             $compilers = json_decode(file_get_contents($file), true);
         }
 
-        $compilers = array_filter($compilers, function($next) use ($compiler) {
+        $compilers = array_filter($compilers, function ($next) use ($compiler) {
             return $next !== $compiler;
         });
 

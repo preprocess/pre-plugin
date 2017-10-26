@@ -2,12 +2,6 @@
 
 namespace Pre\Plugin;
 
-use PhpCsFixer\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Tuupola\Base62;
-use Yay\Engine;
-
 require_once __DIR__ . "/environment.php";
 
 define("COMMENT", trim("
@@ -163,21 +157,12 @@ function compile($from, $to, $format = true, $comment = true)
  */
 function expand($code, $includeStaticPaths = true, $includeStaticCompilers = true)
 {
-    static $engine;
+    $base = getenv("PRE_BASE_DIR");
+    $vendor = realpath("{$base}/vendor/autoload.php");
 
-    if (is_null($engine)) {
-        $engine = new Engine;
-    }
-
-    static $staticCompilers;
+    static $staticCompilers = [];
 
     if ($includeStaticCompilers) {
-        if (!is_array($staticCompilers)) {
-            $staticCompilers = [];
-        }
-
-        $base = getenv("PRE_BASE_DIR");
-
         if (file_exists("{$base}/pre.compilers")) {
             $staticCompilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
         }
@@ -189,27 +174,40 @@ function expand($code, $includeStaticPaths = true, $includeStaticCompilers = tru
         $code = $compiler($code);
     }
 
-    static $staticPaths;
+    static $staticPaths = [];
 
     if ($includeStaticPaths) {
-        if (!is_array($staticPaths)) {
-            $staticPaths = [];
-        }
-
-        $base = getenv("PRE_BASE_DIR");
-
         if (file_exists("{$base}/pre.paths")) {
             $data = json_decode(file_get_contents("{$base}/pre.paths"), true);
+            $data = $data ?? [];
 
-            static $base62;
+            if ((int) getenv("PRE_ISOLATE_DEPENDENCIES") === 1) {
+                $defer = '
+                    require "' . $vendor . '";
 
-            if (!$base62) {
-              $base62 = new Base62();
+                    $data = unserialize(base64_decode("' . base64_encode(serialize($data)) . '"));
+                    $base62 = new \Tuupola\Base62();
+
+                    print base64_encode(serialize(
+                        array_map(function($key) use ($base62) {
+                            return $base62->decode($key);
+                        }, array_keys($data))
+                    ));
+                ';
+
+                $result = exec("php -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'");
+                $staticPaths = unserialize(base64_decode($result));
+            } else {
+                static $base62;
+                
+                if (!$base62) {
+                    $base62 = new \Tuupola\Base62();
+                }
+                
+                $staticPaths = array_map(function ($key) use ($base62) {
+                    return $base62->decode($key);
+                }, array_keys($data));
             }
-
-            $staticPaths = array_map(function($key) use ($base62) {
-                return $base62->decode($key);
-            }, array_keys($data));
         }
     }
 
@@ -225,9 +223,33 @@ function expand($code, $includeStaticPaths = true, $includeStaticCompilers = tru
         }
     }
 
-    gc_disable();
-    $parsed = $engine->expand($code);
-    gc_enable();
+    if ((int) getenv("PRE_ISOLATE_DEPENDENCIES") === 1) {
+        $defer = '
+            require "' . $vendor . '";
+
+            $code = base64_decode("' . base64_encode($code) . '");
+            $engine = new \Yay\Engine;
+
+            gc_disable();
+            $parsed = $engine->expand($code);
+            gc_enable();
+
+            print base64_encode(serialize($parsed));
+        ';
+
+        $result = exec("php -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'");
+        $parsed = unserialize(base64_decode($result));
+    } else {
+        static $engine;
+        
+        if (is_null($engine)) {
+            $engine = new \Yay\Engine;
+        }
+
+        gc_disable();
+        $parsed = $engine->expand($code);
+        gc_enable();
+    }
 
     return preg_replace('/\n\s+\n/', "\n\n", $parsed);
 }
@@ -256,23 +278,54 @@ function formatCode($code)
  */
 function formatFile($path)
 {
-    $application = new Application();
-    $application->setAutoExit(false);
+    $base = getenv("PRE_BASE_DIR");
+    $vendor = realpath("{$base}/vendor/autoload.php");
 
-    if (!is_array($path)) {
-        $path = [$path];
+    if ((int) getenv("PRE_ISOLATE_DEPENDENCIES") === 1) {
+        $defer = '
+            require "' . $vendor . '";
+
+            $path = base64_decode("' . base64_encode($path) . '");
+
+            $application = new PhpCsFixer\Console\Application();
+            $application->setAutoExit(false);
+        
+            if (!is_array($path)) {
+                $path = [$path];
+            }
+        
+            $input = new Symfony\Component\Console\Input\ArrayInput([
+                "command" => "fix",
+                "path" => $path,
+                "--using-cache" => "no",
+                "--quiet",
+            ]);
+        
+            $output = new Symfony\Component\Console\Output\BufferedOutput();
+        
+            $application->run($input, $output);
+        ';
+
+        exec("php -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'");
+    } else {
+        $application = new \PhpCsFixer\Console\Application();
+        $application->setAutoExit(false);
+    
+        if (!is_array($path)) {
+            $path = [$path];
+        }
+    
+        $input = new \Symfony\Component\Console\Input\ArrayInput([
+            "command" => "fix",
+            "path" => $path,
+            "--using-cache" => "no",
+            "--quiet",
+        ]);
+    
+        $output = new \Symfony\Component\Console\Output\BufferedOutput();
+    
+        $application->run($input, $output);
     }
-
-    $input = new ArrayInput([
-        "command" => "fix",
-        "path" => $path,
-        "--using-cache" => "no",
-        "--quiet",
-    ]);
-
-    $output = new BufferedOutput();
-
-    $application->run($input, $output);
 }
 
 /**

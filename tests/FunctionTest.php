@@ -4,7 +4,8 @@ namespace Pre\Plugin;
 
 use PHPUnit\Framework\TestCase;
 
-function compiler($code) {
+function compiler($code)
+{
     return "{$code} COMPILED";
 }
 
@@ -67,7 +68,13 @@ class FunctionTest extends TestCase
         addCompiler("Pre\\Plugin\\compiler");
 
         $expected = "hello world COMPILED";
+
         $actual = expand("hello world");
+
+        // try again without dependency isolation
+        putenv("PRE_ISOLATE_DEPENDENCIES=0");
+        $actual = expand("hello world");
+        putenv("PRE_ISOLATE_DEPENDENCIES=1");
 
         $this->assertEquals($expected, $actual);
 

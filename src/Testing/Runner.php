@@ -35,7 +35,9 @@ abstract class Runner extends TestCase
         $directories = new RecursiveDirectoryIterator($this->path());
 
         $files = new RegexIterator(
-            new RecursiveIteratorIterator($directories), "/spec$/", RegexIterator::MATCH
+            new RecursiveIteratorIterator($directories),
+            "/spec$/",
+            RegexIterator::MATCH
         );
 
         $specs = [];
