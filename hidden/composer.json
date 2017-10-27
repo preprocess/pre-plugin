@@ -1,0 +1,6 @@
+{
+    "require": {
+        "friendsofphp/php-cs-fixer": "^2.0",
+        "yay/yay": "^0.2"
+    }
+}

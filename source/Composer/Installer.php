@@ -1,26 +1,17 @@
 <?php
 
-namespace Pre\Plugin\Integration;
+namespace Pre\Plugin\Composer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
-use Tuupola\Base62;
 
 class Installer extends LibraryInstaller
 {
-    /**
-     * @param string $type
-     */
     public function supports($type)
     {
         return $type === "pre-macro" || $type === "pre-compiler";
     }
 
-    /**
-     * @param PackageInterface $package
-     *
-     * @return string
-     */
     public function getInstallPath(PackageInterface $package)
     {
         $path = parent::getInstallPath($package);
@@ -29,7 +20,7 @@ class Installer extends LibraryInstaller
 
         if (isset($extra["macros"]) && is_array($extra["macros"])) {
             foreach ($extra["macros"] as $macro) {
-                $this->addMacroPath("{$path}/{$macro}");
+                $this->addMacro("{$path}/{$macro}");
             }
         }
 
@@ -42,42 +33,28 @@ class Installer extends LibraryInstaller
         return $path;
     }
 
-    /**
-     * @param string $path
-     */
-    private function addMacroPath($path)
+    private function addMacro($macro)
     {
-        if (!file_exists($path)) {
+        if (!file_exists($macro)) {
             return;
         }
 
-        $base = $this->base();
-        $file = "{$base}/pre.paths";
+        $base = getenv("PRE_BASE_DIR");
+        $file = "{$base}/pre.macros";
 
-        $paths = [];
+        $macro = base64_encode($macro);
+
+        $macros = [];
 
         if (file_exists($file)) {
-            $paths = json_decode(file_get_contents($file), true);
+            $macros = json_decode(file_get_contents($file), true);
         }
 
-        static $base62;
-
-        if (!$base62) {
-            $base62 = new Base62();
+        if (!in_array($macro, $macros)) {
+            array_push($macros, $macro);
         }
 
-        $paths[$base62->encode($path)] = true;
-
-        file_put_contents($file, json_encode($paths, JSON_PRETTY_PRINT));
-    }
-
-    /**
-     * @return string
-     */
-    private function base()
-    {
-        require_once __DIR__ . "/../environment.php";
-        return getenv("PRE_BASE_DIR");
+        file_put_contents($file, json_encode($macros, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -85,8 +62,14 @@ class Installer extends LibraryInstaller
      */
     private function addCompiler($compiler)
     {
-        $base = $this->base();
+        if (!is_callable($compiler)) {
+            return;
+        }
+
+        $base = getenv("PRE_BASE_DIR");
         $file = "{$base}/pre.compilers";
+
+        $compiler = base64_encode($compiler);
 
         $compilers = [];
 
@@ -94,11 +77,9 @@ class Installer extends LibraryInstaller
             $compilers = json_decode(file_get_contents($file), true);
         }
 
-        $compilers = array_filter($compilers, function ($next) use ($compiler) {
-            return $next !== $compiler;
-        });
-
-        $compilers[] = $compiler;
+        if (!in_array($compiler, $compilers)) {
+            array_push($compilers, $compiler);
+        }
 
         file_put_contents($file, json_encode($compilers, JSON_PRETTY_PRINT));
     }

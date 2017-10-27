@@ -1,6 +1,6 @@
 <?php
 
-namespace Pre\Plugin\Integration;
+namespace Pre\Plugin\Composer;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -12,7 +12,6 @@ use Composer\Script\Event;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use function Pre\Plugin\compile;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -76,7 +75,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             require_once "{$basePath}/vendor/autoload.php";
 
             $directory = new RecursiveDirectoryIterator($basePath);
-            $files = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
+
+            $files = new RecursiveIteratorIterator(
+                $directory, RecursiveIteratorIterator::SELF_FIRST
+            );
 
             foreach ($files as $file) {
                 if (stripos($file, "{$basePath}/vendor") === 0) {
@@ -90,7 +92,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $pre = $file->getPathname();
                 $php = preg_replace("/pre$/", "php", $pre);
 
-                compile($pre, $php, $format = true, $comment = false);
+                Pre\Plugin\compile(
+                    $pre, $php, $format = true, $comment = false
+                );
             }
         } else {
             if (file_exists($lockPath)) {
