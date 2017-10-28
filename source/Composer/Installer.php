@@ -5,6 +5,8 @@ namespace Pre\Plugin\Composer;
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 
+require_once __DIR__ . "/../environment.php";
+
 class Installer extends LibraryInstaller
 {
     public function supports($type)
