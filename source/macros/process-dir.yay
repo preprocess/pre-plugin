@@ -1,0 +1,7 @@
+<?php
+
+macro ·recursion {
+    process ..
+} >> {
+    process __DIR__ .
+}

@@ -6,29 +6,22 @@
         "composer-plugin-api": "^1.1"
     },
     "autoload": {
-        "files": [
-            "src/autoload.php",
-            "src/functions.php",
-            "src/expanders.php",
-            "src/bootstrap.php"
-        ],
         "psr-4": {
-            "Pre\\Plugin\\": "src"
-        }
+            "Pre\\Plugin\\": "source"
+        },
+        "files": [
+            "source/environment.php",
+            "source/expanders.php",
+            "source/functions.php",
+            "source/autoload.php",
+            "source/macros.php"
+        ]
     },
     "require-dev": {
         "composer/composer": "^1.3",
-        "phpunit/phpunit": "^5.0|^6.0",
-        "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "^0.2",
-        "tuupola/base62": "^0.8"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Pre\\Plugin\\": "tests"
-        }
+        "phpunit/phpunit": "^5.0|^6.0"
     },
     "extra": {
-        "class": ["Pre\\Plugin\\Integration\\Plugin"]
+        "class": ["Pre\\Plugin\\Composer\\Plugin"]
     }
 }

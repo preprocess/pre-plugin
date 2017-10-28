@@ -1,83 +1,76 @@
 <?php
 
-namespace Pre\Plugin;
-
 use PHPUnit\Framework\TestCase;
 
-function compiler($code)
-{
-    return "{$code} COMPILED";
-}
+putenv("PRE_BASE_DIR=" . realpath(__DIR__ . "/../"));
 
 class FunctionTest extends TestCase
 {
     /**
      * @test
      */
-    public function can_register_its_own_macros()
+    public function can_add_custom_macros()
     {
-        // this repo registers its own macro file
+        Pre\Plugin\addMacro(__DIR__ . "/fixtures/find-replace.yay");
 
-        $this->assertEquals(1, count(getMacroPaths()));
-
-        $expected = realpath(__DIR__ . "/../src/macros.yay");
-        $actual = realpath(getMacroPaths()[0]);
+        $actual = Pre\Plugin\parse("<?php\n\nfind;\n");
+        $expected = "<?php\n\nreplace;\n";
 
         $this->assertEquals($expected, $actual);
+    }
+    
+    /**
+     * @test
+     */
+    public function can_remove_custom_macros()
+    {
+        $path = __DIR__ . "/fixtures/find-replace.yay";
 
-        // what happens when we register another?
-
-        $expected = "foo/bar/baz";
-        addMacroPath($expected);
-
-        $this->assertEquals(2, count(getMacroPaths()));
-
-        $actual = getMacroPaths()[1];
+        Pre\Plugin\addMacro($path);
+        Pre\Plugin\removeMacro($path);
+        
+        $actual = Pre\Plugin\parse("<?php\n\nfind;\n");
+        $expected = "<?php\n\nfind;\n";
 
         $this->assertEquals($expected, $actual);
+    }
+    
+    /**
+     * @test
+     * @dataProvider builtInMacros
+     */
+    public function can_use_built_in_macros($from, $expected)
+    {
+        $actual = Pre\Plugin\parse($from);
+        $this->assertEquals($expected, $actual);
+    }
 
-        // can we remove it again?
-
-        removeMacroPath("foo/bar/baz");
-
-        $this->assertEquals(1, count(getMacroPaths()));
+    public static function builtInMacros()
+    {
+        return [
+            [
+                "<?php\n\n..'/foo';\n",
+                "<?php\n\n__DIR__ .'/foo';\n",
+            ],
+            [
+                "<?php\n\nprocess ..'/foo';\n",
+                "<?php\n\n\Pre\Plugin\process(__DIR__ . '/foo');\n",
+            ],
+            [
+                "<?php\n\nprocess '/foo';\n",
+                "<?php\n\n\Pre\Plugin\process('/foo');\n",
+            ],
+        ];
     }
 
     /**
      * @test
      */
-    public function can_register_custom_macros()
+    public function can_format_code()
     {
-        addMacroPath(__DIR__ . "/Fixture/macros.yay");
+        $expected = "<?php\n\n\$func = function () {\n};\n";
+        $actual = Pre\Plugin\format("<?php\n\n\$func = function\n()\n{\n};");
 
-        $fixture = new Fixture\TestFixture();
-
-        $expected = "hello chris";
-        $actual = $fixture->bar("chris");
-
-        $this->assertEquals($expected, $actual);
-
-        removeMacroPath(__DIR__ . "/Fixture/macros.yay");
-    }
-
-    /**
-     * @test
-     */
-    public function can_register_custom_compilers()
-    {
-        addCompiler("Pre\\Plugin\\compiler");
-
-        $expected = "hello world COMPILED";
-
-        $actual = expand("hello world");
-
-        // try again without dependency isolation
-        putenv("PRE_ISOLATE_DEPENDENCIES=0");
-        $actual = expand("hello world");
-        putenv("PRE_ISOLATE_DEPENDENCIES=1");
-
-        $this->assertEquals($expected, $actual);
-
-        removeCompiler("Pre\\Plugin\\compiler");
+        $this->assertEquals($actual, $expected);
     }
 }

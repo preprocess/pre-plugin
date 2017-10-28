@@ -1,7 +1,7 @@
 <?php
 
 macro {
-    foo
+    find
 } >> {
-    bar
+    replace
 }

@@ -1,18 +1,6 @@
 <?php
 
 macro ·recursion {
-    ..
-} >> {
-    __DIR__ .
-}
-
-macro ·recursion {
-    process ..
-} >> {
-    process __DIR__ .
-}
-
-macro ·recursion {
     ·chain(
         process,
         ·ls(
