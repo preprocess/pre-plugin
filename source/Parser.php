@@ -2,6 +2,8 @@
 
 namespace Pre\Plugin;
 
+use Exception;
+
 define("COMMENT", trim("
 # This file is generated, changes you make will be lost.
 # Make your changes in %s instead.
@@ -12,6 +14,8 @@ class Parser
     private $macro = [];
 
     private $compilers = [];
+
+    private $functions = [];
 
     public function addMacro($macro)
     {
@@ -26,7 +30,7 @@ class Parser
     public function getMacros()
     {
         return array_keys(
-            array_filter($this->macros, function($key) {
+            array_filter($this->macros, function ($key) {
                 return $this->macros[$key];
             }, ARRAY_FILTER_USE_KEY)
         );
@@ -38,10 +42,11 @@ class Parser
         
         if (file_exists("{$base}/pre.macros")) {
             $macros = json_decode(
-                file_get_contents("{$base}/pre.macros"), true
+                file_get_contents("{$base}/pre.macros"),
+                true
             );
 
-            return array_map(function($macro) {
+            return array_map(function ($macro) {
                 return base64_decode($macro);
             }, $macros);
         }
@@ -70,10 +75,11 @@ class Parser
 
         if (file_exists("{$base}/pre.compilers")) {
             $compilers = json_decode(
-                file_get_contents("{$base}/pre.compilers"), true
+                file_get_contents("{$base}/pre.compilers"),
+                true
             );
 
-            return array_map(function($compiler) {
+            return array_map(function ($compiler) {
                 return base64_decode($compiler);
             }, $compilers);
         }
@@ -81,7 +87,7 @@ class Parser
         return [];
     }
 
-    function process($from)
+    public function process($from)
     {
         $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
         $this->compile($from, $to);
@@ -89,7 +95,7 @@ class Parser
         return require $to;
     }
 
-    function compile($from, $to, $format = true, $comment = true)
+    public function compile($from, $to, $format = true, $comment = true)
     {
         if (file_exists($from)) {
             $code = file_get_contents($from);
@@ -103,7 +109,9 @@ class Parser
                 $comment = sprintf(COMMENT, $from);
 
                 $code = str_replace(
-                    "<?php", "<?php\n\n{$comment}", $code
+                    "<?php",
+                    "<?php\n\n{$comment}",
+                    $code
                 );
             }
 
@@ -132,7 +140,8 @@ class Parser
     private function getCodeWithCompilers($code)
     {
         $compilers = array_merge(
-            $this->getCompilers(), $this->getDiscoveredCompilers()
+            $this->getCompilers(),
+            $this->getDiscoveredCompilers()
         );
         
         foreach ($compilers as $compiler) {
@@ -144,16 +153,19 @@ class Parser
         return $code;
     }
 
-    private function getCodeWithMacros($code) 
+    private function getCodeWithMacros($code)
     {
         $macros = array_merge(
-            $this->getMacros(), $this->getDiscoveredMacros()
+            $this->getMacros(),
+            $this->getDiscoveredMacros()
         );
         
         foreach ($macros as $macro) {
             if (file_exists($macro)) {
                 $code = str_replace(
-                    "<?php", file_get_contents($macro), $code
+                    "<?php",
+                    file_get_contents($macro),
+                    $code
                 );
             }
         }
@@ -173,5 +185,19 @@ class Parser
         unlink($file);
 
         return $code;
+    }
+
+    public function addFunction($name, $function)
+    {
+        $this->functions[$name] = $function;
+    }
+
+    public function getFunction($name)
+    {
+        if (isset($this->functions[$name])) {
+            return $this->functions[$name];
+        }
+
+        throw new Exception($name . " has not been added");
     }
 }
