@@ -1,6 +1,8 @@
 {
     "require": {
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "^0.2"
-    }
+        "yay/yay": "dev-feature/expression+operator_precedence"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
