@@ -3,7 +3,7 @@
 namespace Pre\Plugin;
 
 spl_autoload_register(function ($class) {
-    $base = getenv("PRE_BASE_DIR");
+    $base = base();
 
     if (file_exists("{$base}/pre.lock")) {
         return;

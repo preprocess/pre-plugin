@@ -2,9 +2,18 @@
 
 namespace Pre\Plugin;
 
+function base()
+{
+    if (file_exists(__DIR__ . "/base.php")) {
+        return require __DIR__ . "/base.php";
+    }
+
+    return realpath(__DIR__ . "/..");
+}
+
 function defer($code)
 {
-    $base = getenv("PRE_BASE_DIR");
+    $base = base();
 
     $hidden = realpath(__DIR__ . "/../hidden/vendor/autoload.php");
     $visible = realpath("{$base}/vendor/autoload.php");

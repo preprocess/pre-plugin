@@ -38,7 +38,7 @@ class Parser
 
     public function getDiscoveredMacros()
     {
-        $base = getenv("PRE_BASE_DIR");
+        $base = base();
         
         if (file_exists("{$base}/pre.macros")) {
             $macros = json_decode(
@@ -71,7 +71,7 @@ class Parser
 
     public function getDiscoveredCompilers()
     {
-        $base = getenv("PRE_BASE_DIR");
+        $base = base();
 
         if (file_exists("{$base}/pre.compilers")) {
             $compilers = json_decode(

@@ -2,8 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-putenv("PRE_BASE_DIR=" . realpath(__DIR__ . "/../"));
-
 class FunctionTest extends TestCase
 {
     /**
