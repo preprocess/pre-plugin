@@ -1,6 +1,6 @@
 <?php
 
-macro {
+$(macro) {
     find
 } >> {
     replace

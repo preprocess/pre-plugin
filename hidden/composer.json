@@ -1,7 +1,7 @@
 {
     "require": {
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-feature/expression+operator_precedence"
+        "yay/yay": "dev-feature/expression-rebase"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
