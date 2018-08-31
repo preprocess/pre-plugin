@@ -2,21 +2,40 @@
 
 namespace Pre\Plugin;
 
-function base()
+function find($file, $iterations = 10, $prefix = __DIR__)
 {
-    if (file_exists(__DIR__ . "/base.php")) {
-        return require __DIR__ . "/base.php";
+    $folder = "../";
+
+    if ($prefix) {
+        $folder = "{$prefix}/{$folder}";
     }
 
-    return realpath(__DIR__ . "/..");
+    for ($i = 0; $i < $iterations; $i++) {
+        $try = "{$folder}{$file}";
+
+        if (file_exists($try)) {
+            return realpath($try);
+        }
+
+        $folder .= "../";
+    }
+}
+
+function base()
+{
+    $autoload = find("autoload.php");
+    return realpath("{$autoload}/../");
 }
 
 function defer($code)
 {
-    $base = base();
-
     $hidden = realpath(__DIR__ . "/../hidden/vendor/autoload.php");
-    $visible = realpath("{$base}/vendor/autoload.php");
+    $visible = find("autoload.php");
+    
+    if (!$visible) {
+        // the plugin is being used/tested directly
+        $visible = __DIR__ . "/../vendor/autoload.php";
+    }
 
     $defer = "
         require '{$hidden}';

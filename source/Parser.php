@@ -39,7 +39,7 @@ class Parser
     public function getDiscoveredMacros()
     {
         $base = base();
-        
+
         if (file_exists("{$base}/pre.macros")) {
             $macros = json_decode(
                 file_get_contents("{$base}/pre.macros"),

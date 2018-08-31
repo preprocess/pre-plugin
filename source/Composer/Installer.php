@@ -9,8 +9,6 @@ require_once __DIR__ . "/../environment.php";
 
 class Installer extends LibraryInstaller
 {
-    private $base;
-
     public function supports($type)
     {
         return $type === "pre-macro" || $type === "pre-compiler";
@@ -19,8 +17,6 @@ class Installer extends LibraryInstaller
     public function getInstallPath(PackageInterface $package)
     {
         $path = parent::getInstallPath($package);
-
-        $this->setBaseFrom($path);
 
         $extra = $package->getExtra();
 
@@ -39,20 +35,9 @@ class Installer extends LibraryInstaller
         return $path;
     }
 
-    private function setBaseFrom($path)
-    {
-        $parts = explode(DIRECTORY_SEPARATOR, $path);
-        $wanted = array_slice($parts, 0, count($parts) - 3);
-        $joined = implode(DIRECTORY_SEPARATOR, $wanted);
-
-        $this->base = $joined;
-
-        file_put_contents(__DIR__ . "/../base.php", "<?php return '{$joined}';");
-    }
-
     private function addMacro($macro)
     {
-        $base = $this->base;
+        $base = base();
         $file = "{$base}/pre.macros";
 
         $macro = base64_encode($macro);
@@ -75,7 +60,7 @@ class Installer extends LibraryInstaller
      */
     private function addCompiler($compiler)
     {
-        $base = $this->base;
+        $base = base();
         $file = "{$base}/pre.compilers";
 
         $compiler = base64_encode($compiler);

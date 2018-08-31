@@ -1,8 +1,6 @@
 {
     "require": {
         "friendsofphp/php-cs-fixer": "^2.0",
-        "yay/yay": "dev-feature/expression-rebase"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+        "yay/yay": "^0.7.0"
+    }
 }
