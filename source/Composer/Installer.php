@@ -4,8 +4,10 @@ namespace Pre\Plugin\Composer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
+use function Pre\Plugin\base;
 
 require_once __DIR__ . "/../environment.php";
+require_once __DIR__ . "/../functions.php";
 
 class Installer extends LibraryInstaller
 {

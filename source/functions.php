@@ -23,8 +23,8 @@ function find($file, $iterations = 10, $prefix = __DIR__)
 
 function base()
 {
-    $autoload = find("autoload.php");
-    return realpath("{$autoload}/../");
+    $vendor = find("vendor");
+    return realpath("{$vendor}/../");
 }
 
 function defer($code)
