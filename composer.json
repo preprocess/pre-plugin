@@ -27,8 +27,5 @@
         ]
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "scripts": {
-        "refresh-dependencies": "rm -rf composer.lock vendor && composer install"
-    }
+    "prefer-stable": true
 }
