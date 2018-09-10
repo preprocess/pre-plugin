@@ -1,6 +1,6 @@
 <?php
 
-macro ·recursion {
+$(macro :recursion) {
     process ..
 } >> {
     process __DIR__ .

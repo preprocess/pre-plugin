@@ -2,12 +2,40 @@
 
 namespace Pre\Plugin;
 
+function find($file, $iterations = 10, $prefix = __DIR__)
+{
+    $folder = "../";
+
+    if ($prefix) {
+        $folder = "{$prefix}/{$folder}";
+    }
+
+    for ($i = 0; $i < $iterations; $i++) {
+        $try = "{$folder}{$file}";
+
+        if (file_exists($try)) {
+            return realpath($try);
+        }
+
+        $folder .= "../";
+    }
+}
+
+function base()
+{
+    $vendor = find("vendor");
+    return realpath("{$vendor}/../");
+}
+
 function defer($code)
 {
-    $base = getenv("PRE_BASE_DIR");
-
     $hidden = realpath(__DIR__ . "/../hidden/vendor/autoload.php");
-    $visible = realpath("{$base}/vendor/autoload.php");
+    $visible = find("autoload.php");
+    
+    if (!$visible) {
+        // the plugin is being used/tested directly
+        $visible = __DIR__ . "/../vendor/autoload.php";
+    }
 
     $defer = "
         require '{$hidden}';
@@ -84,4 +112,16 @@ function removeCompiler($compiler)
 {
     $instance = instance();
     return $instance->removeCompiler($compiler);
+}
+
+function addFunction(...$args)
+{
+    $instance = instance();
+    return $instance->addFunction(...$args);
+}
+
+function getFunction(...$args)
+{
+    $instance = instance();
+    return $instance->getFunction(...$args);
 }

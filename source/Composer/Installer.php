@@ -4,6 +4,10 @@ namespace Pre\Plugin\Composer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
+use function Pre\Plugin\base;
+
+require_once __DIR__ . "/../environment.php";
+require_once __DIR__ . "/../functions.php";
 
 require_once __DIR__ . "/../environment.php";
 
@@ -37,11 +41,7 @@ class Installer extends LibraryInstaller
 
     private function addMacro($macro)
     {
-        if (!file_exists($macro)) {
-            return;
-        }
-
-        $base = getenv("PRE_BASE_DIR");
+        $base = base();
         $file = "{$base}/pre.macros";
 
         $macro = base64_encode($macro);
@@ -64,11 +64,7 @@ class Installer extends LibraryInstaller
      */
     private function addCompiler($compiler)
     {
-        if (!is_callable($compiler)) {
-            return;
-        }
-
-        $base = getenv("PRE_BASE_DIR");
+        $base = base();
         $file = "{$base}/pre.compilers";
 
         $compiler = base64_encode($compiler);

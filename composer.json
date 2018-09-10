@@ -12,6 +12,7 @@
         "files": [
             "source/environment.php",
             "source/expanders.php",
+            "source/parsers.php",
             "source/functions.php",
             "source/autoload.php",
             "source/macros.php"
@@ -22,6 +23,8 @@
         "phpunit/phpunit": "^5.0|^6.0"
     },
     "extra": {
-        "class": ["Pre\\Plugin\\Composer\\Plugin"]
+        "class": [
+            "\\Pre\\Plugin\\Composer\\Plugin"
+        ]
     }
 }

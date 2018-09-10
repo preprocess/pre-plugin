@@ -2,8 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-putenv("PRE_BASE_DIR=" . realpath(__DIR__ . "/../"));
-
 class FunctionTest extends TestCase
 {
     /**
@@ -37,7 +35,7 @@ class FunctionTest extends TestCase
     
     /**
      * @test
-     * @dataProvider builtInMacros
+     * @dataProvider macros
      */
     public function can_use_built_in_macros($from, $expected)
     {
@@ -45,7 +43,7 @@ class FunctionTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public static function builtInMacros()
+    public static function macros()
     {
         return [
             [
