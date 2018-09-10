@@ -12,6 +12,7 @@
         "files": [
             "source/environment.php",
             "source/expanders.php",
+            "source/parsers.php",
             "source/functions.php",
             "source/autoload.php",
             "source/macros.php"
