@@ -26,7 +26,5 @@
         "class": [
             "\\Pre\\Plugin\\Composer\\Plugin"
         ]
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
