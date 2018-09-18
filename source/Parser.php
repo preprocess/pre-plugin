@@ -121,8 +121,8 @@ class Parser
 
     public function parse($code)
     {
-        $code = $this->getCodeWithCompilers($code);
         $code = $this->getCodeWithMacros($code);
+        $code = $this->getCodeWithCompilers($code);
         $code = base64_encode($code);
 
         return defer("
