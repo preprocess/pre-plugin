@@ -9,11 +9,11 @@ spl_autoload_register(function ($class) {
         return;
     }
 
-    if (!file_exists("{$base}/composer/autoload_psr4.php")) {
+    if (!file_exists("{$base}/vendor/composer/autoload_psr4.php")) {
         return;
     }
 
-    $definitions = require "{$base}/composer/autoload_psr4.php";
+    $definitions = require "{$base}/vendor/composer/autoload_psr4.php";
 
     foreach ($definitions as $prefix => $paths) {
         $prefixLength = strlen($prefix);
