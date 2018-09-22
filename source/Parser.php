@@ -90,9 +90,15 @@ class Parser
     public function process($from)
     {
         $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
-        $this->compile($from, $to);
-
+        if(!$this->isProcessed($from, $to)) {
+            $this->compile($from, $to);
+        }
         return require $to;
+    }
+
+    private function isProcessed($from, $to)
+    {
+        return (file_exists($to) && (filemtime($from) < filemtime($to)));
     }
 
     public function compile($from, $to, $format = true, $comment = true)
