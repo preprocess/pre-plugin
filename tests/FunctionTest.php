@@ -39,7 +39,7 @@ class FunctionTest extends TestCase
      */
     public function can_use_built_in_macros($from, $expected)
     {
-        $actual = Pre\Plugin\parse($from);
+        $actual = Pre\Plugin\format(Pre\Plugin\parse($from));
         $this->assertEquals($expected, $actual);
     }
 
@@ -48,7 +48,7 @@ class FunctionTest extends TestCase
         return [
             [
                 "<?php\n\n..'/foo';\n",
-                "<?php\n\n__DIR__ .'/foo';\n",
+                "<?php\n\n__DIR__ . '/foo';\n",
             ],
             [
                 "<?php\n\nprocess ..'/foo';\n",
@@ -66,9 +66,9 @@ class FunctionTest extends TestCase
      */
     public function can_format_code()
     {
-        $expected = "<?php\n\n\$func = function () {\n};\n";
-        $actual = Pre\Plugin\format("<?php\n\n\$func = function\n()\n{\n};");
+        $expected = "<?php\n\n\$func = function () {};\n";
+        $actual = Pre\Plugin\format("<?php\n\n\$func = function\n()\n{\n};\n");
 
-        $this->assertEquals($actual, $expected);
+        $this->assertEquals($expected, $actual);
     }
 }
