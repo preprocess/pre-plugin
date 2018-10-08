@@ -90,15 +90,17 @@ class Parser
     public function process($from)
     {
         $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
-        if(!$this->isProcessed($from, $to)) {
+
+        if (!$this->isProcessed($from, $to)) {
             $this->compile($from, $to);
         }
+
         return require $to;
     }
 
     private function isProcessed($from, $to)
     {
-        return (file_exists($to) && (filemtime($from) < filemtime($to)));
+        return file_exists($to) && (filemtime($from) < filemtime($to));
     }
 
     public function compile($from, $to, $format = true, $comment = true)
@@ -184,8 +186,8 @@ class Parser
         $file = tempnam(sys_get_temp_dir(), "pre");
         file_put_contents($file, $code);
 
-        $path = realpath(__DIR__ . "/../hidden/vendor/bin/php-cs-fixer");
-        exec("{$path} fix {$file} --using-cache=no --quiet");
+        $path = realpath(__DIR__ . "/../node_modules/prettier/bin-prettier.js");
+        exec("{$path} --write --parser=php {$file} 1> /dev/null 2> /dev/null", $output);
 
         $code = file_get_contents($file);
         unlink($file);
