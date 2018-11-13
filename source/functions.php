@@ -29,43 +29,6 @@ if (!function_exists("\\Pre\\Plugin\\base")) {
     }
 }
 
-
-if (!function_exists("\\Pre\\Plugin\\defer")) {
-    function defer($code) {
-        $hidden = realpath(__DIR__ . "/../hidden/vendor/autoload.php");
-        $visible = find("autoload.php");
-
-        if (!$visible) {
-            // the plugin is being used/tested directly
-            $visible = __DIR__ . "/../vendor/autoload.php";
-        }
-
-        $defer = "
-            require '{$hidden}';
-            require '{$visible}';
-
-            \$function = function() {
-                {$code};
-            };
-
-            print base64_encode(gzencode(\$function()));
-        ";
-
-        $result = exec(
-            escapeshellcmd(PHP_BINARY) . " -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'",
-            $output
-        );
-
-        $return = @gzdecode(base64_decode($result));
-
-        if ($return === false) {
-            throw new \RuntimeException("defer failed due to " . implode("\n", $output));
-        }
-
-        return $return;
-    }
-}
-
 if (!function_exists("\\Pre\\Plugin\\instance")) {
     function instance() {
         static $instance = null;
@@ -131,19 +94,5 @@ if (!function_exists("\\Pre\\Plugin\\removeCompiler")) {
     function removeCompiler($compiler) {
         $instance = instance();
         return $instance->removeCompiler($compiler);
-    }
-}
-
-if (!function_exists("\\Pre\\Plugin\\addFunction")) {
-    function addFunction(...$args) {
-        $instance = instance();
-        return $instance->addFunction(...$args);
-    }
-}
-
-if (!function_exists("\\Pre\\Plugin\\getFunction")) {
-    function getFunction(...$args) {
-        $instance = instance();
-        return $instance->getFunction(...$args);
     }
 }

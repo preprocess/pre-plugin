@@ -1,19 +1,17 @@
 <?php
 
 $(macro :recursion) {
-    $(
-        chain(
-            process,
-            ls(
-                either(
-                    token(T_DIR),
-                    token(T_STRING),
-                    token(T_CONSTANT_ENCAPSED_STRING)
-                ) as item,
-                token(".")
-            ) as items
-        )
-    )
-} >> {$$(trim(
-    \Pre\Plugin\process($$(trim($(items ...( . ) { $(item) }))))
-))}
+    $(chain(
+        buffer("process"),
+        ls(
+            either(
+                token(T_DIR),
+                token(T_STRING),
+                token(T_CONSTANT_ENCAPSED_STRING)
+            ) as item,
+            buffer(".")
+        ) as items
+    ))
+} >> {
+    \Pre\Plugin\process($(items ...(.) { $(item) }))
+}

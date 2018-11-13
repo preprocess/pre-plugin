@@ -2,25 +2,23 @@
     "name": "pre/plugin",
     "type": "composer-plugin",
     "license": "MIT",
-    "require": {
-        "composer-plugin-api": "^1.1"
-    },
     "autoload": {
         "psr-4": {
             "Pre\\Plugin\\": "source"
         },
         "files": [
-            "source/environment.php",
-            "source/expanders.php",
-            "source/parsers.php",
             "source/functions.php",
             "source/autoload.php",
             "source/macros.php"
         ]
     },
+    "require": {
+        "yay/yay": "^0.7.0",
+        "composer-plugin-api": "^1.1"
+    },
     "require-dev": {
         "composer/composer": "^1.3",
-        "phpunit/phpunit": "^5.0|^6.0"
+        "phpunit/phpunit": "^5.0|^6.0|^7.0"
     },
     "extra": {
         "class": [

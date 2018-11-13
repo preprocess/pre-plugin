@@ -3,19 +3,20 @@
 namespace Pre\Plugin;
 
 use Exception;
+use Yay\Engine;
 
-define("COMMENT", trim("
-# This file is generated, changes you make will be lost.
-# Make your changes in %s instead.
-"));
+define(
+    "COMMENT",
+    trim("
+// This file is generated and changes you make will be lost.
+// Change %s instead.
+")
+);
 
 class Parser
 {
     private $macro = [];
-
     private $compilers = [];
-
-    private $functions = [];
 
     public function addMacro($macro)
     {
@@ -30,9 +31,13 @@ class Parser
     public function getMacros()
     {
         return array_keys(
-            array_filter($this->macros, function ($key) {
-                return $this->macros[$key];
-            }, ARRAY_FILTER_USE_KEY)
+            array_filter(
+                $this->macros,
+                function ($key) {
+                    return $this->macros[$key];
+                },
+                ARRAY_FILTER_USE_KEY
+            )
         );
     }
 
@@ -41,10 +46,7 @@ class Parser
         $base = base();
 
         if (file_exists("{$base}/pre.macros")) {
-            $macros = json_decode(
-                file_get_contents("{$base}/pre.macros"),
-                true
-            );
+            $macros = json_decode(file_get_contents("{$base}/pre.macros"), true);
 
             return array_map(function ($macro) {
                 return base64_decode($macro);
@@ -74,10 +76,7 @@ class Parser
         $base = base();
 
         if (file_exists("{$base}/pre.compilers")) {
-            $compilers = json_decode(
-                file_get_contents("{$base}/pre.compilers"),
-                true
-            );
+            $compilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
 
             return array_map(function ($compiler) {
                 return base64_decode($compiler);
@@ -100,7 +99,7 @@ class Parser
 
     private function isProcessed($from, $to)
     {
-        return file_exists($to) && (filemtime($from) < filemtime($to));
+        return file_exists($to) && filemtime($from) < filemtime($to);
     }
 
     public function compile($from, $to, $format = true, $comment = true)
@@ -116,11 +115,7 @@ class Parser
             if ($comment) {
                 $comment = sprintf(COMMENT, $from);
 
-                $code = str_replace(
-                    "<?php",
-                    "<?php\n\n{$comment}",
-                    $code
-                );
+                $code = str_replace("<?php", "<?php\n\n{$comment}", $code);
             }
 
             file_put_contents($to, $code);
@@ -131,26 +126,15 @@ class Parser
     {
         $code = $this->getCodeWithMacros($code);
         $code = $this->getCodeWithCompilers($code);
-        $code = base64_encode(gzencode($code));
 
-        return defer("
-            \$code = gzdecode(base64_decode('{$code}'));
-            \$engine = new \Yay\Engine;
+        $engine = new Engine();
 
-            gc_disable();
-            \$parsed = \$engine->expand(\$code);
-            gc_enable();
-
-            return \$parsed;
-        ");
+        return $engine->expand($code, $engine->currentFileName(), Engine::GC_ENGINE_DISABLED);
     }
 
     private function getCodeWithCompilers($code)
     {
-        $compilers = array_merge(
-            $this->getCompilers(),
-            $this->getDiscoveredCompilers()
-        );
+        $compilers = array_merge($this->getCompilers(), $this->getDiscoveredCompilers());
 
         foreach ($compilers as $compiler) {
             if (is_callable($compiler)) {
@@ -163,18 +147,11 @@ class Parser
 
     private function getCodeWithMacros($code)
     {
-        $macros = array_merge(
-            $this->getMacros(),
-            $this->getDiscoveredMacros()
-        );
+        $macros = array_merge($this->getMacros(), $this->getDiscoveredMacros());
 
         foreach ($macros as $macro) {
             if (file_exists($macro)) {
-                $code = str_replace(
-                    "<?php",
-                    file_get_contents($macro),
-                    $code
-                );
+                $code = str_replace("<?php", file_get_contents($macro), $code);
             }
         }
 
@@ -183,29 +160,34 @@ class Parser
 
     public function format($code)
     {
-        $file = tempnam(sys_get_temp_dir(), "pre");
-        file_put_contents($file, $code);
+        $path = __DIR__;
+        $code = $this->addOpeningTag(trim($code));
+        $encoded = base64_encode($code);
 
-        $path = realpath(__DIR__ . "/../node_modules/prettier/bin-prettier.js");
-        exec("{$path} --write --parser=php {$file} 1> /dev/null 2> /dev/null", $output);
+        $command = "node -e '
+            const atob = require(\"atob\")
+            const prettier = require(\"prettier\")
 
-        $code = file_get_contents($file);
-        unlink($file);
+            prettier.resolveConfig(\"{$path}\").then(options => {
+                try {
+                    const formatted = prettier.format(atob(\"{$encoded}\").trim(), options)
+                    console.log(formatted)
+                } catch (e) {}
+            })
+        '";
 
-        return $code;
-    }
+        exec($command, $output);
 
-    public function addFunction($name, $function)
-    {
-        $this->functions[$name] = $function;
-    }
-
-    public function getFunction($name)
-    {
-        if (isset($this->functions[$name])) {
-            return $this->functions[$name];
+        if (!$output) {
+            return $code;
         }
 
-        throw new Exception($name . " has not been added");
+        $output = join("\n", $output);
+        return $this->addOpeningTag($output) . "\n";
+    }
+
+    private function addOpeningTag($code)
+    {
+        return "<?php" . preg_replace("/^\<\?php/", "", trim($code));
     }
 }
