@@ -131,10 +131,10 @@ class Parser
     {
         $code = $this->getCodeWithMacros($code);
         $code = $this->getCodeWithCompilers($code);
-        $code = base64_encode($code);
+        $code = base64_encode(gzencode($code));
 
         return defer("
-            \$code = base64_decode('{$code}');
+            \$code = gzdecode(base64_decode('{$code}'));
             \$engine = new \Yay\Engine;
 
             gc_disable();
@@ -151,7 +151,7 @@ class Parser
             $this->getCompilers(),
             $this->getDiscoveredCompilers()
         );
-        
+
         foreach ($compilers as $compiler) {
             if (is_callable($compiler)) {
                 $code = $compiler($code);
@@ -167,7 +167,7 @@ class Parser
             $this->getMacros(),
             $this->getDiscoveredMacros()
         );
-        
+
         foreach ($macros as $macro) {
             if (file_exists($macro)) {
                 $code = str_replace(
