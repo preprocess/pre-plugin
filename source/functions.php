@@ -48,14 +48,14 @@ if (!function_exists("\\Pre\\Plugin\\defer")) {
                 {$code};
             };
 
-            print base64_encode(serialize(\$function()));
+            print base64_encode(gzencode(\$function()));
         ";
 
         $result = exec(
             "php -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'"
         );
 
-        return unserialize(base64_decode($result));
+        return gzdecode(base64_decode($result));
     }
 }
 
