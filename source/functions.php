@@ -52,7 +52,7 @@ if (!function_exists("\\Pre\\Plugin\\defer")) {
         ";
 
         $result = exec(
-            "php -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'"
+            escapeshellcmd(PHP_BINARY) . " -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'"
         );
 
         return gzdecode(base64_decode($result));
