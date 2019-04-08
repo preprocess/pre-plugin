@@ -32,9 +32,7 @@ spl_autoload_register(function ($class) {
                 continue;
             }
 
-            compile($pre, $php, $format = true, $comment = true);
-
-            require_once $php;
+            process($pre, $php, $format = true, $comment = true);
         }
     }
 }, false, true);

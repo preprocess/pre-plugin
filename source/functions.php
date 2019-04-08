@@ -72,9 +72,9 @@ if (!function_exists("\\Pre\\Plugin\\instance")) {
 }
 
 if (!function_exists("\\Pre\\Plugin\\process")) {
-    function process($from) {
+    function process($from, $to = '', $format = true, $comment = true) {
         $instance = instance();
-        return $instance->process($from);
+        return $instance->process($from, $to, $format, $comment);
     }
 }
 
