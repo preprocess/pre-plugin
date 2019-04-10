@@ -52,10 +52,17 @@ if (!function_exists("\\Pre\\Plugin\\defer")) {
         ";
 
         $result = exec(
-            escapeshellcmd(PHP_BINARY) . " -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'"
+            escapeshellcmd(PHP_BINARY) . " -r 'eval(base64_decode(\"" . base64_encode($defer) . "\"));'",
+            $output
         );
 
-        return gzdecode(base64_decode($result));
+        $return = @gzdecode(base64_decode($result));
+
+        if ($return === false) {
+            throw new \RuntimeException("defer failed due to " . implode("\n", $output));
+        }
+
+        return $return;
     }
 }
 
