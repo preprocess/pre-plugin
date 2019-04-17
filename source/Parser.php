@@ -178,7 +178,10 @@ class Parser
             })
         '";
 
+        $cwd = getcwd();
+        chdir(__DIR__);
         exec($command, $output);
+        chdir($cwd);
 
         if (!$output) {
             return $code;
