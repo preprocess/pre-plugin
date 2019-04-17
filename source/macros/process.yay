@@ -13,5 +13,5 @@ $(macro :recursion) {
         ) as items
     ))
 } >> {
-    \Pre\Plugin\process($(items ...(.) { $(item) }))
+    \Pre\Plugin\process($$(trim($(items ...(.) { $(item) }))))
 }
