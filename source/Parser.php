@@ -86,9 +86,11 @@ class Parser
         return [];
     }
 
-    public function process($from)
+    public function process($from, $to = null, $format = true, $comment = true)
     {
-        $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
+        if (is_null($to)) {
+            $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
+        }
 
         if (!$this->isProcessed($from, $to)) {
             $this->compile($from, $to);

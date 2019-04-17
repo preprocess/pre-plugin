@@ -35,7 +35,7 @@ spl_autoload_register(
                     continue;
                 }
 
-                compile($pre, $php, ($format = true), ($comment = true));
+                process($pre, $php);
 
                 require_once $php;
             }
