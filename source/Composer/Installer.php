@@ -2,6 +2,7 @@
 
 namespace Pre\Plugin\Composer;
 
+use Composed;
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 use function Pre\Plugin\base;
@@ -38,7 +39,7 @@ class Installer extends LibraryInstaller
 
     private function addMacro($macro)
     {
-        $base = base();
+        $base = Composed\BASE_DIR;
         $file = "{$base}/pre.macros";
 
         $macro = base64_encode($macro);
@@ -61,7 +62,7 @@ class Installer extends LibraryInstaller
      */
     private function addCompiler($compiler)
     {
-        $base = base();
+        $base = Composed\BASE_DIR;
         $file = "{$base}/pre.compilers";
 
         $compiler = base64_encode($compiler);

@@ -2,33 +2,6 @@
 
 namespace Pre\Plugin;
 
-if (!function_exists("\\Pre\\Plugin\\find")) {
-    function find($file, $iterations = 10, $prefix = __DIR__) {
-        $folder = "../";
-
-        if ($prefix) {
-            $folder = "{$prefix}/{$folder}";
-        }
-
-        for ($i = 0; $i < $iterations; $i++) {
-            $try = "{$folder}{$file}";
-
-            if (file_exists($try)) {
-                return realpath($try);
-            }
-
-            $folder .= "../";
-        }
-    }
-}
-
-if (!function_exists("\\Pre\\Plugin\\base")) {
-    function base() {
-        $vendor = find("vendor");
-        return realpath("{$vendor}/../");
-    }
-}
-
 if (!function_exists("\\Pre\\Plugin\\instance")) {
     function instance() {
         static $instance = null;
@@ -45,6 +18,13 @@ if (!function_exists("\\Pre\\Plugin\\process")) {
     function process($from, $to = null, $format = true, $comment = true) {
         $instance = instance();
         return $instance->process($from, $to, $format, $comment);
+    }
+}
+
+if (!function_exists("\\Pre\\Plugin\\pathFor")) {
+    function pathFor($pre) {
+        $instance = instance();
+        return $instance->pathFor($pre);
     }
 }
 

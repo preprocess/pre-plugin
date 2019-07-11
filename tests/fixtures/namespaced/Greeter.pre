@@ -1,0 +1,10 @@
+<?php
+
+namespace Pre\Plugin\Tests\Fixtures;
+
+class Greeter
+{
+    public function greet() {
+        return "hello world";
+    }
+}

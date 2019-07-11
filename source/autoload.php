@@ -2,13 +2,22 @@
 
 namespace Pre\Plugin;
 
+use Composed;
+
 spl_autoload_register(
     function ($class) {
-        $base = base();
+        static $found;
 
-        if (file_exists("{$base}/pre.lock")) {
+        if (!$found) {
+            $found = [];
+        }
+
+        if (isset($found[$class])) {
+            require_once $found[$class];
             return;
         }
+
+        $base = Composed\BASE_DIR;
 
         if (!file_exists("{$base}/vendor/composer/autoload_psr4.php")) {
             return;
@@ -28,16 +37,22 @@ spl_autoload_register(
             $relative = substr($class, $prefixLength);
 
             foreach ($paths as $path) {
-                $php = $path . "/" . str_replace("\\", "/", $relative) . ".php";
                 $pre = $path . "/" . str_replace("\\", "/", $relative) . ".pre";
 
                 if (!file_exists($pre)) {
                     continue;
                 }
 
-                process($pre, $php);
+                if (!file_exists("{$base}/pre.lock")) {
+                    process($pre);
+                }
 
-                require_once $php;
+                $outputPath = pathFor($pre);
+                $found[$class] = $outputPath;
+
+                require_once $outputPath;
+
+                return;
             }
         }
     },

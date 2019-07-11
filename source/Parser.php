@@ -2,6 +2,7 @@
 
 namespace Pre\Plugin;
 
+use Composed;
 use Exception;
 use Yay\Engine;
 
@@ -43,7 +44,7 @@ class Parser
 
     public function getDiscoveredMacros()
     {
-        $base = base();
+        $base = Composed\BASE_DIR;
 
         if (file_exists("{$base}/pre.macros")) {
             $macros = json_decode(file_get_contents("{$base}/pre.macros"), true);
@@ -73,7 +74,7 @@ class Parser
 
     public function getDiscoveredCompilers()
     {
-        $base = base();
+        $base = Composed\BASE_DIR;
 
         if (file_exists("{$base}/pre.compilers")) {
             $compilers = json_decode(file_get_contents("{$base}/pre.compilers"), true);
@@ -86,10 +87,29 @@ class Parser
         return [];
     }
 
+    public function pathFor($pre)
+    {
+        $base = Composed\BASE_DIR;
+
+        $config = null;
+
+        if (file_exists("{$base}/composer.json")) {
+            $config = json_decode(file_get_contents("{$base}/composer.json"));
+        }
+
+        $cachePath = "";
+
+        if (!empty($config->extra->pre->cache)) {
+            $cachePath = $config->extra->pre->cache;
+        }
+
+        return $cachePath . preg_replace("/\.[a-zA-Z]+$/", ".php", $pre);
+    }
+
     public function process($from, $to = null, $format = true, $comment = true)
     {
         if (is_null($to)) {
-            $to = preg_replace("/\.[a-zA-Z]+$/", ".php", $from);
+            $to = $this->pathFor($from);
         }
 
         if (!$this->isProcessed($from, $to)) {
@@ -118,6 +138,12 @@ class Parser
                 $comment = sprintf(COMMENT, $from);
 
                 $code = str_replace("<?php", "<?php\n\n{$comment}", $code);
+            }
+
+            $path = dirname($to);
+
+            if (!is_dir($path)) {
+                @mkdir($path, 0777, true);
             }
 
             file_put_contents($to, $code);

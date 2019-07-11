@@ -71,4 +71,28 @@ class FunctionTest extends TestCase
 
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * @test
+     */
+    public function can_compile_to_cache()
+    {
+        // test autoload stuff
+
+        $expected = "hello world";
+        $actual = (new Pre\Plugin\Tests\Fixtures\Greeter)->greet();
+
+        $this->assertEquals($expected, $actual);
+
+        // test on-demand stuff
+
+        $expected = "hello world";
+        $actual = Pre\Plugin\process(__DIR__ . "/fixtures/greeting.pre");
+
+        $this->assertEquals($expected, $actual);
+
+        // clean up
+
+        exec("rm -rf cache");
+    }
 }
