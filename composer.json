@@ -23,11 +23,11 @@
     },
     "require": {
         "yay/yay": "^0.7.0",
-        "composer-plugin-api": "^1.1",
+        "composer-plugin-api": "^2.0",
         "joshdifabio/composed": "^1.0"
     },
     "require-dev": {
-        "composer/composer": "^1.8",
+        "composer/composer": "^2.0",
         "phpunit/phpunit": "^5.0|^6.0|^7.0"
     },
     "extra": {
