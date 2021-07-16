@@ -15,7 +15,7 @@
     },
     "require": {
         "yay/yay": "^0.7.0",
-        "composer-plugin-api": "^1.1"
+        "composer-plugin-api": "^1.1|^2.1"
     },
     "require-dev": {
         "composer/composer": "^1.3",
