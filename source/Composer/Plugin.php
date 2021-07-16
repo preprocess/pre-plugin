@@ -35,9 +35,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
         $this->io = $io;
 
-        $composer
-            ->getInstallationManager()
-            ->addInstaller(new Installer($io, $composer));
+        $composer->getInstallationManager()->addInstaller(new Installer($io, $composer));
     }
 
     /**
@@ -48,9 +46,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            "pre-autoload-dump" => [
-                "onPreAutoloadDump",
-            ],
+            "pre-autoload-dump" => ["onPreAutoloadDump"],
         ];
     }
 
@@ -77,9 +73,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
             $directory = new RecursiveDirectoryIterator($basePath);
 
-            $files = new RecursiveIteratorIterator(
-                $directory, RecursiveIteratorIterator::SELF_FIRST
-            );
+            $files = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
 
             foreach ($files as $file) {
                 if (stripos($file, "{$basePath}/vendor") === 0) {
@@ -93,9 +87,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $pre = $file->getPathname();
                 $php = preg_replace("/pre$/", "php", $pre);
 
-                compile(
-                    $pre, $php, $format = true, $comment = false
-                );
+                compile($pre, $php, ($format = true), ($comment = false));
             }
         } else {
             if (file_exists($lockPath)) {
@@ -146,5 +138,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         return false;
+    }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
     }
 }
