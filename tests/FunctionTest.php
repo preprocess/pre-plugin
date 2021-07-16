@@ -16,7 +16,7 @@ class FunctionTest extends TestCase
 
         $this->assertEquals($expected, $actual);
     }
-    
+
     /**
      * @test
      */
@@ -26,13 +26,13 @@ class FunctionTest extends TestCase
 
         Pre\Plugin\addMacro($path);
         Pre\Plugin\removeMacro($path);
-        
+
         $actual = Pre\Plugin\parse("<?php\n\nfind;\n");
         $expected = "<?php\n\nfind;\n";
 
         $this->assertEquals($expected, $actual);
     }
-    
+
     /**
      * @test
      * @dataProvider macros
@@ -46,18 +46,9 @@ class FunctionTest extends TestCase
     public static function macros()
     {
         return [
-            [
-                "<?php\n\n..'/foo';\n",
-                "<?php\n\n__DIR__ . '/foo';\n",
-            ],
-            [
-                "<?php\n\nprocess ..'/foo';\n",
-                "<?php\n\n\Pre\Plugin\process(__DIR__ . '/foo');\n",
-            ],
-            [
-                "<?php\n\nprocess '/foo';\n",
-                "<?php\n\n\Pre\Plugin\process('/foo');\n",
-            ],
+            ["<?php\n\n..'/foo';\n", "<?php\n\n__DIR__ . \"/foo\";\n"],
+            ["<?php\n\nprocess ..'/foo';\n", "<?php\n\n\Pre\Plugin\process(__DIR__ . \"/foo\");\n"],
+            ["<?php\n\nprocess '/foo';\n", "<?php\n\n\Pre\Plugin\process(\"/foo\");\n"],
         ];
     }
 

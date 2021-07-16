@@ -2,6 +2,9 @@
     "name": "pre/plugin",
     "type": "composer-plugin",
     "license": "MIT",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "autoload": {
         "psr-4": {
             "Pre\\Plugin\\": "source"
@@ -13,9 +16,15 @@
             "source/macros.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Pre\\Plugin\\Tests\\Fixtures\\": "tests/fixtures/namespaced"
+        }
+    },
     "require": {
         "yay/yay": "^0.7.0",
-        "composer-plugin-api": "^1.1|^2.1"
+        "composer-plugin-api": "^1.1|^2.1",
+        "joshdifabio/composed": "^1.0"
     },
     "require-dev": {
         "composer/composer": "^1.3",
@@ -24,6 +33,9 @@
     "extra": {
         "class": [
             "\\Pre\\Plugin\\Composer\\Plugin"
-        ]
+        ],
+        "pre": {
+            "cache": "./cache"
+        }
     }
 }
